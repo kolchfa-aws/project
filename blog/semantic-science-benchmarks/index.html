@@ -1,0 +1,1883 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="ROBOTS" content="ALL" />
+    <meta name="MSSmartTagsPreventParsing" content="true" />
+    <meta name="Copyright" content="" />
+
+    <meta name="keywords" content="
+		 
+			semantic search engine, neural search engine, keyword and natural language search, search relevance, benchmarking tests 
+		" 
+	/>
+
+    <link type="application/atom+xml" rel="alternate" href="https://kolchfa-aws.github.io/project/feed.xml" title="OpenSearch" />
+
+    <meta name="description" content="Learn how to create a semantic search engine in OpenSearch, including architecture and model options, benchmarking tests, and effects of different combination strategies and normalization protocols." />
+    
+    
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="The ABCs of semantic search in OpenSearch: Architectures, benchmarks, and combination strategies" />
+    
+      
+      
+       
+    
+
+
+
+    
+    <meta name="twitter:description" content="OpenSearch is a community-driven, Apache 2.0-licensed open source search and analytics suite that makes it easy to ingest, search, visualize, and analyze data." />
+    
+    
+    <meta name="twitter:image" content="https://opensearch.org/assets/opensearch-twitter-card.png" />
+    
+
+
+    <meta content="OpenSearch" property="og:site_name">
+    <meta content="https://kolchfa-aws.github.io/project/blog/semantic-science-benchmarks/" property="og:url">
+    <meta content="The ABCs of semantic search in OpenSearch: Architectures, benchmarks, and combination strategies" property="og:title">
+    
+
+    <meta content="https://kolchfa-aws.github.io/project/assets/img/logo-high-resolution.png" property="og:image">
+
+    
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+    <link rel="icon" sizes="192x192" href="/assets/img/apple-touch-icon.png">
+    <link rel="shortcut icon" href="/assets/img/favicon.ico">
+
+    <link rel="canonical" href="https://kolchfa-aws.github.io/project/blog/semantic-science-benchmarks/" />
+
+    <meta name="msapplication-TileColor" content="#113228">
+    <meta name="msapplication-TileImage" content="/img/icon-tile.png">
+    
+    
+    <title> The ABCs of semantic search in OpenSearch: Architectures, benchmarks, and combination strategies &middot;  OpenSearch</title>
+
+    <link rel="stylesheet" href="/assets/css/output.css" >
+    <style>
+    table{
+        border:2px solid #e6e6e6;
+        display: block;
+        max-width: -moz-fit-content;
+        max-width: fit-content;
+        margin: 0 auto;
+        overflow-x: auto;
+    }
+    
+    th{
+        border:2px solid #e6e6e6;
+        padding: 5px;
+        text-align: center;
+    }
+    
+    td{
+        border:1px solid #e6e6e6;
+        padding: 10px;
+        text-align: center;
+    }
+</style>
+
+    <script src="/assets/js/lib/modernizr.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BQV14XK08F"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-BQV14XK08F');
+    </script>
+    
+  </head>
+
+
+  <body id="" class=" page--blog-post">
+
+
+
+<div role="banner" id="top">
+  <div class="navigation-container">
+    <a class="navigation-container--logo" href="/">
+      OpenSearch
+      
+        <svg width="200" height="39" viewBox="0 0 200 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_723_1352)">
+                <path d="M33.1921 14.2473C32.5203 14.2473 31.9757 14.7919 31.9757 15.4638C31.9757 25.4739 23.861 33.5886 13.8509 33.5886C13.179 33.5886 12.6344 34.1332 12.6344 34.8051C12.6344 35.4769 13.179 36.0215 13.8509 36.0215C25.2046 36.0215 34.4086 26.8175 34.4086 15.4638C34.4086 14.7919 33.864 14.2473 33.1921 14.2473Z" fill="#005EB8"/>
+                <path d="M25.8502 22.0429C27.02 20.1346 28.1514 17.5901 27.9288 14.0279C27.4677 6.64898 20.7844 1.05116 14.4735 1.65781C12.0029 1.8953 9.46604 3.90914 9.69142 7.51629C9.78938 9.08382 10.5566 10.009 11.8035 10.7203C12.9902 11.3973 14.515 11.8262 16.2435 12.3123C18.3313 12.8996 20.7532 13.5592 22.6146 14.9309C24.8455 16.5749 26.3705 18.4807 25.8502 22.0429Z" fill="#003B5C"/>
+                <path d="M2.10678 9.13989C0.936968 11.0482 -0.194358 13.5927 0.0282221 17.1549C0.489286 24.5338 7.17263 30.1316 13.4835 29.525C15.9541 29.2875 18.491 27.2737 18.2656 23.6665C18.1676 22.099 17.4004 21.1738 16.1535 20.4625C14.9668 19.7855 13.442 19.3566 11.7135 18.8705C9.6257 18.2832 7.20382 17.6236 5.34245 16.2519C3.11154 14.6079 1.58652 12.7021 2.10678 9.13989Z" fill="#005EB8"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M194.892 16.6666V29.0322H199.731V15.5914C199.731 13.1143 199.247 11.243 198.279 9.97369C197.311 8.69203 195.851 8.0645 193.952 8.0645C191.891 8.0645 190.24 9.26923 189.247 11.2903H188.979C189.052 10.2468 189.118 9.64901 189.167 9.21251C189.217 8.76235 189.247 8.48369 189.247 8.0645V0.268799H184.409V29.0322H189.516V19.086C189.516 16.8554 189.591 15.2051 190.05 14.022C190.509 12.8266 191.31 12.2289 192.452 12.2289C193.978 12.2289 194.892 13.6473 194.892 16.6666ZM124.652 27.5424C125.959 26.1907 126.613 24.2439 126.613 21.7018C126.613 20.1144 126.255 18.7008 125.538 17.4607C124.834 16.2207 123.583 15.0055 121.785 13.815C120.453 12.947 119.516 12.1719 118.975 11.4899C118.447 10.8079 118.183 10.008 118.183 9.09041C118.183 8.16036 118.403 7.42875 118.844 6.89552C119.296 6.34987 119.937 6.07708 120.767 6.07708C121.522 6.07708 122.225 6.21348 122.879 6.48627C123.545 6.75912 124.18 7.06912 124.784 7.41633L126.481 3.36136C124.532 2.19571 122.502 1.61288 120.39 1.61288C118.177 1.61288 116.411 2.29491 115.091 3.65897C113.783 5.02303 113.13 6.87074 113.13 9.20203C113.13 10.4172 113.293 11.4837 113.62 12.4013C113.959 13.319 114.431 14.1498 115.034 14.8939C115.65 15.6255 116.549 16.3943 117.731 17.2004C119.089 18.118 120.063 18.955 120.654 19.7114C121.245 20.4555 121.54 21.2801 121.54 22.1854C121.54 23.103 121.289 23.8284 120.786 24.3616C120.296 24.8949 119.56 25.1615 118.58 25.1615C116.857 25.1615 114.965 24.498 112.903 23.1712V28.1748C114.588 29.1049 116.631 29.5699 119.032 29.5699C121.483 29.5699 123.357 28.8941 124.652 27.5424ZM129.932 26.8142C131.441 28.6513 133.498 29.5699 136.103 29.5699C138.335 29.5699 140.248 29.092 141.844 28.1362V24.0585C140.149 25.064 138.491 25.5667 136.87 25.5667C135.598 25.5667 134.601 25.1198 133.878 24.2261C133.155 23.32 132.833 22.0108 132.796 20.1613H142.742V17.4486C142.742 14.482 142.088 12.1794 140.778 10.5409C139.469 8.88998 137.681 8.0645 135.411 8.0645C132.98 8.0645 131.085 9.02649 129.726 10.9505C128.368 12.8745 127.688 15.5495 127.688 18.9755C127.688 22.3518 128.436 24.9647 129.932 26.8142ZM133.616 13.0172C134.077 12.2601 134.663 11.8815 135.374 11.8815C136.134 11.8815 136.733 12.2725 137.169 13.0545C137.605 13.8365 137.878 15.1523 137.903 16.6666H132.796C132.87 15.0902 133.155 13.762 133.616 13.0172ZM154.839 29.0322L154.032 26.3441H153.763C153.023 27.5584 152.309 28.4236 151.518 28.8821C150.727 29.3406 149.728 29.5699 148.523 29.5699C146.977 29.5699 145.759 28.9999 144.867 27.8599C143.988 26.7198 143.548 25.1337 143.548 23.1015C143.548 20.9206 144.151 19.3035 145.357 18.2503C146.575 17.1846 148.39 16.596 150.802 16.4845L153.59 16.373V14.886C153.59 12.9529 152.742 11.9864 151.047 11.9864C149.791 11.9864 148.346 12.4697 146.713 13.4362L144.98 10.0162C147.066 8.71504 149.298 8.0645 151.747 8.0645C153.97 8.0645 155.695 8.69649 156.85 9.96041C158.018 11.2119 158.602 12.9901 158.602 15.2949V29.0322H154.839ZM150.576 25.7037C151.493 25.7037 152.222 25.301 152.761 24.4956C153.314 23.6777 153.59 22.5935 153.59 21.2428V19.4956L152.046 19.57C150.903 19.6319 150.061 19.9541 149.521 20.5365C148.994 21.1189 148.73 21.9863 148.73 23.1387C148.73 24.8487 149.345 25.7037 150.576 25.7037ZM170.968 8.46772C170.392 8.28224 169.536 8.0645 168.937 8.0645C168.092 8.0645 167.351 8.34267 166.715 8.89907C166.078 9.45547 165.592 9.99208 165.054 11.2903H164.785L163.979 8.60213H160.215V29.0322H165.303V18.2796C165.303 16.4744 165.417 15.3098 166.054 14.3701C166.69 13.4181 167.602 12.9421 168.789 12.9421C169.34 12.9421 169.819 13.0484 170.161 13.172L170.968 8.46772ZM178.495 29.5699C176.045 29.5699 174.169 28.7516 172.889 26.9517C171.608 25.1518 170.968 22.5079 170.968 19.0199C170.968 15.3705 171.571 12.6458 172.777 10.846C173.997 9.04606 175.816 8.0645 178.352 8.0645C179.115 8.0645 179.974 8.25783 180.811 8.48127C181.648 8.70471 182.668 8.98654 183.333 9.40858L181.661 13.3037C180.639 12.6955 179.734 12.3914 178.946 12.3914C177.899 12.3914 177.142 12.9437 176.674 14.0485C176.219 15.1408 175.991 16.7855 175.991 18.9826C175.991 21.13 176.219 22.7375 176.674 23.805C177.13 24.8601 177.875 25.3877 178.909 25.3877C180.14 25.3877 181.427 24.9532 182.769 24.0843V28.4413C181.476 29.2481 180.058 29.5699 178.495 29.5699Z" fill="#003B5C"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M57.9446 25.9475C59.6376 23.5326 60.4839 20.0774 60.4839 15.582C60.4839 11.0866 59.6436 7.63763 57.9635 5.23513C56.2828 2.82024 53.8678 1.61279 50.7187 1.61279C47.5322 1.61279 45.0924 2.81405 43.3995 5.21655C41.7067 7.60666 40.8602 11.0495 40.8602 15.5448C40.8602 20.0774 41.7067 23.5511 43.3995 25.966C45.0924 28.3685 47.5197 29.5698 50.6814 29.5698C53.8307 29.5698 56.2516 28.3624 57.9446 25.9475ZM47.2272 22.6595C46.443 21.0371 46.0509 18.678 46.0509 15.582C46.0509 12.4736 46.443 10.1145 47.2272 8.50451C48.0114 6.8822 49.1752 6.07107 50.7187 6.07107C53.7559 6.07107 55.2747 9.24134 55.2747 15.582C55.2747 21.9226 53.7435 25.093 50.6814 25.093C49.1628 25.093 48.0114 24.2818 47.2272 22.6595ZM68.9172 29.031C69.607 29.4293 70.3495 29.5698 71.2366 29.5698C73.1344 29.5698 74.6774 28.6701 75.7742 26.7532C76.871 24.8365 77.4194 22.1915 77.4194 18.8184C77.4194 15.3955 76.8893 12.7506 75.8296 10.8836C74.7699 9.00414 73.3038 8.06441 71.4307 8.06441C69.4839 8.06441 67.9581 9.22403 66.9355 11.2902H66.6667L65.8602 8.60204H62.0968V38.4408H66.9355V29.5698C66.9355 29.2213 66.864 28.0367 66.6667 26.344H66.9355C67.3387 27.5537 68.2393 28.6203 68.9172 29.031ZM67.6785 13.6468C68.1102 12.7382 68.8059 12.2839 69.7672 12.2839C70.6667 12.2839 71.3258 12.8191 71.7452 13.8895C72.1764 14.9599 72.392 16.578 72.392 18.7438C72.392 23.1499 71.5296 25.353 69.8043 25.353C68.8059 25.353 68.0914 24.8302 67.6602 23.7847C67.229 22.7391 67.0135 21.0713 67.0135 18.7811V18.1276C67.0382 16.0366 67.2597 14.543 67.6785 13.6468ZM86.9097 29.5698C84.3043 29.5698 82.2473 28.6512 80.7387 26.8141C79.2425 24.9646 78.4946 22.3517 78.4946 18.9754C78.4946 15.5494 79.1742 12.8744 80.5328 10.9504C81.892 9.0264 83.7866 8.06441 86.2178 8.06441C88.4871 8.06441 90.2758 8.88989 91.585 10.5408C92.8941 12.1793 93.5484 14.4819 93.5484 17.4485V20.1612H83.6022C83.6398 22.0107 83.9613 23.3199 84.6844 24.226C85.4075 25.1197 86.4049 25.5666 87.6764 25.5666C89.2973 25.5666 90.9554 25.0639 92.6506 24.0584V28.1361C91.0549 29.0919 89.1414 29.5698 86.9097 29.5698ZM86.1807 11.8814C85.4699 11.8814 84.8839 12.26 84.4226 13.0171C83.9613 13.7619 83.6769 15.0901 83.6022 16.6666H88.7097C88.685 15.1522 88.4118 13.8364 87.9758 13.0544C87.5393 12.2724 86.9409 11.8814 86.1807 11.8814ZM105.645 16.6666V29.0321H110.484V15.6983C110.484 13.2036 110.012 11.3076 109.069 10.0103C108.138 8.71306 106.729 8.06441 104.842 8.06441C103.726 8.06441 102.751 8.33881 101.919 8.88769C101.088 9.42403 100.447 10.3297 100 11.2902H99.7312L99.0592 8.60204H95.1613V29.0321H100.269V19.2203C100.269 16.6882 100.362 14.9624 100.859 13.9021C101.355 12.8294 102.137 12.293 103.204 12.293C104.011 12.293 104.595 12.6797 104.954 13.4531C105.315 14.2264 105.645 15.1573 105.645 16.6666Z" fill="#005EB8"/>
+            </g>
+            <defs>
+                <clipPath id="clip0_723_1352">
+                    <rect width="200" height="38.7097" fill="white"/>
+                </clipPath>
+            </defs>
+        </svg>
+    
+          
+    </a>
+    <div class="menu-button">
+      <i class="icon icon-reorder"></i>
+      <i class="icon icon-close"></i>
+      <span>Menu</span>
+    </div>
+    <div role="navigation" class="navigation-container--nested-nav-wrapper nav-menu-on">
+      <ul class="navigation-container--nested-nav-wrapper--nested-nav">
+        
+          <li><div class="nested-nav--top-menu-item-wrapper nested-nav-top-menu-item--wrapper__has_children">
+              <div class="nested-nav--top-menu-item-wrapper--link">
+                <a  href="#" 
+                  
+                >OpenSearchCon</a>
+              </div><div class="nested-nav--top-menu-item-wrapper--toggle">
+                  
+        <div class="opensearch-toggle-button--wrapper">
+            <a href="#" class="opensearch-toggle-button-link opensearch-toggle-button-link--untoggled opensearch-toggle-button-link__visible">
+                
+        <svg width="30" height="31" viewBox="0 0 30 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect y="14" width="30" height="3" fill="#0085B8"/>
+            <rect x="13.5" y="30.5" width="30" height="3" transform="rotate(-90 13.5 30.5)" fill="#0085B8"/>
+        </svg>
+    
+
+            </a>
+            <a href="#" class="opensearch-toggle-button-link opensearch-toggle-button-link--toggled opensearch-toggle-button-link__invisible">
+                
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect y="13.5" width="30" height="3" fill="#0085B8"/>
+        </svg>
+    
+
+            </a>
+        </div>
+
+
+                </div></div>
+            
+              <ul>
+                <li>
+                    <a href="/events/opensearchcon/"
+                      
+                    >2024 - Stay Informed</a>
+                  </li>
+                <li>
+                    <a href="/events/opensearchcon/sessions/"
+                      
+                    >Sessions</a>
+                  </li>
+                <li>
+                    <a href="/events/opensearchcon/speakers/"
+                      
+                    >Speakers</a>
+                  </li>
+                <li>
+                    <a href="/events/opensearchcon/exhibitors/"
+                      
+                    >Exhibitors</a>
+                  </li>
+                <li>
+                    <a href="/events/opensearchcon/workshops/"
+                      
+                    >Workshops</a>
+                  </li>
+                <li>
+                    <a href="/events/opensearchcon/unconference/"
+                      
+                    >Unconference</a>
+                  </li>
+                <li>
+                    <a href="/opensearchcon2023-cfp.html"
+                      
+                    >CFP is closed</a>
+                  </li>
+                
+              </ul>
+            
+          </li>
+        
+          <li><div class="nested-nav--top-menu-item-wrapper nested-nav--top-menu-item--wrapper__without-children">
+              <div class="nested-nav--top-menu-item-wrapper--link">
+                <a  href="/downloads.html" 
+                  
+                >Download</a>
+              </div></div>
+            
+          </li>
+        
+          <li><div class="nested-nav--top-menu-item-wrapper nested-nav-top-menu-item--wrapper__has_children">
+              <div class="nested-nav--top-menu-item-wrapper--link">
+                <a  href="/about.html" 
+                  
+                >About</a>
+              </div><div class="nested-nav--top-menu-item-wrapper--toggle">
+                  
+        <div class="opensearch-toggle-button--wrapper">
+            <a href="#" class="opensearch-toggle-button-link opensearch-toggle-button-link--untoggled opensearch-toggle-button-link__visible">
+                
+        <svg width="30" height="31" viewBox="0 0 30 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect y="14" width="30" height="3" fill="#0085B8"/>
+            <rect x="13.5" y="30.5" width="30" height="3" transform="rotate(-90 13.5 30.5)" fill="#0085B8"/>
+        </svg>
+    
+
+            </a>
+            <a href="#" class="opensearch-toggle-button-link opensearch-toggle-button-link--toggled opensearch-toggle-button-link__invisible">
+                
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect y="13.5" width="30" height="3" fill="#0085B8"/>
+        </svg>
+    
+
+            </a>
+        </div>
+
+
+                </div></div>
+            
+              <ul>
+                <li>
+                    <a href="/releases.html"
+                      
+                    >Releases</a>
+                  </li>
+                <li>
+                    <a href="https://github.com/orgs/opensearch-project/projects/1"
+                      
+                    >Roadmap</a>
+                  </li>
+                <li>
+                    <a href="/faq"
+                      
+                    >FAQ</a>
+                  </li>
+                
+              </ul>
+            
+          </li>
+        
+          <li><div class="nested-nav--top-menu-item-wrapper nested-nav-top-menu-item--wrapper__has_children">
+              <div class="nested-nav--top-menu-item-wrapper--link">
+                <a  href="#" 
+                  
+                >Community</a>
+              </div><div class="nested-nav--top-menu-item-wrapper--toggle">
+                  
+        <div class="opensearch-toggle-button--wrapper">
+            <a href="#" class="opensearch-toggle-button-link opensearch-toggle-button-link--untoggled opensearch-toggle-button-link__visible">
+                
+        <svg width="30" height="31" viewBox="0 0 30 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect y="14" width="30" height="3" fill="#0085B8"/>
+            <rect x="13.5" y="30.5" width="30" height="3" transform="rotate(-90 13.5 30.5)" fill="#0085B8"/>
+        </svg>
+    
+
+            </a>
+            <a href="#" class="opensearch-toggle-button-link opensearch-toggle-button-link--toggled opensearch-toggle-button-link__invisible">
+                
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect y="13.5" width="30" height="3" fill="#0085B8"/>
+        </svg>
+    
+
+            </a>
+        </div>
+
+
+                </div></div>
+            
+              <ul>
+                <li>
+                    <a href="/blog"
+                      
+                    >Blog</a>
+                  </li>
+                <li>
+                    <a href="https://forum.opensearch.org/"
+                      
+                    >Forum</a>
+                  </li>
+                <li>
+                    <a href="/slack.html"
+                      
+                    >Slack</a>
+                  </li>
+                <li>
+                    <a href="/events"
+                      
+                    >Events</a>
+                  </li>
+                <li>
+                    <a href="/partners"
+                      
+                    >Partners</a>
+                  </li>
+                <li>
+                    <a href="/community_projects"
+                      
+                    >Projects</a>
+                  </li>
+                
+              </ul>
+            
+          </li>
+        
+          <li><div class="nested-nav--top-menu-item-wrapper nested-nav--top-menu-item--wrapper__without-children">
+              <div class="nested-nav--top-menu-item-wrapper--link">
+                <a  href="/docs/" 
+                  
+                >Documentation</a>
+              </div></div>
+            
+          </li>
+        
+          <li><div class="nested-nav--top-menu-item-wrapper nested-nav-top-menu-item--wrapper__has_children">
+              <div class="nested-nav--top-menu-item-wrapper--link">
+                <a  href="/platform/index.html" 
+                  
+                >Platform</a>
+              </div><div class="nested-nav--top-menu-item-wrapper--toggle">
+                  
+        <div class="opensearch-toggle-button--wrapper">
+            <a href="#" class="opensearch-toggle-button-link opensearch-toggle-button-link--untoggled opensearch-toggle-button-link__visible">
+                
+        <svg width="30" height="31" viewBox="0 0 30 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect y="14" width="30" height="3" fill="#0085B8"/>
+            <rect x="13.5" y="30.5" width="30" height="3" transform="rotate(-90 13.5 30.5)" fill="#0085B8"/>
+        </svg>
+    
+
+            </a>
+            <a href="#" class="opensearch-toggle-button-link opensearch-toggle-button-link--toggled opensearch-toggle-button-link__invisible">
+                
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect y="13.5" width="30" height="3" fill="#0085B8"/>
+        </svg>
+    
+
+            </a>
+        </div>
+
+
+                </div></div>
+            
+              <ul>
+                <li>
+                    <a href="/platform/search/index.html"
+                      
+                    >Search</a>
+                  </li>
+                <li>
+                    <a href="/platform/observability/index.html"
+                      
+                    >Observability</a>
+                  </li>
+                <li>
+                    <a href="/platform/security-analytics/index.html"
+                      
+                    >Security Analytics</a>
+                  </li>
+                <li>
+                    <a href="/platform/search/vector-database.html"
+                      
+                    >Vector Database</a>
+                  </li>
+                <li>
+                    <a href="https://playground.opensearch.org/"
+                      
+                    >Playground Demo</a>
+                  </li>
+                <li>
+                    <a href="/benchmarks"
+                      
+                    >Performance Benchmarks</a>
+                  </li>
+                
+              </ul>
+            
+          </li>
+        
+        <li class="top-banner-search">
+          <div class="top-banner-search--field-with-results">
+            <div class="top-banner-search--field-with-results--field">
+              <div class="top-banner-search--field-with-results--field--wrapper">
+                <div class="top-banner-search--field-with-results--field--wrapper--search-component">
+                  <div class="top-banner-search--field-with-results--field--wrapper--search-component--input-wrap">
+                    <input type="text" id="search-input" class="top-banner-search--field-with-results--field--wrapper--search-component--search-input"
+                      placeholder="Search for anything" aria-label="Search OpenSearch"
+                      data-docs-version="latest" autocomplete="off"
+                    >
+                    <div class="top-banner-search--field-with-results--field--wrapper--search-component--search-spinner"><i></i></div>
+                    <label for="search-input" class="top-banner-search--field-with-results--field--wrapper--search-component--search-label">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="top-banner-search--field-with-results--field--wrapper--search-component--search-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+                        <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      </svg>
+                    </label>
+                  </div>
+                  <div id="search-results" class="top-banner-search--field-with-results--field--wrapper--search-component--search-results">
+                    <div class="top-banner-search--field-with-results--field--wrapper--search-component--search-results-wrapper"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="top-banner-search--overlay"></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+<script type="module">
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const menu = document.querySelector('#top .nav-menu-on');
+    const button = document.querySelector('#top .menu-button');
+    button.addEventListener('click', () => {
+        menu.classList.toggle('active');
+        button.classList.toggle('active');
+    });
+
+    const isMobile = window.matchMedia('only screen and (max-width: 834px)').matches;
+
+    // Initialize the calendar view menu item to target the current month.
+    const calendarMenuItemSelector = '#top a[href*="/events/calendar/"]';
+    const calendarMenuItem = document.querySelector(calendarMenuItemSelector);
+    if (calendarMenuItem && !isMobile) {
+      const now = new Date();
+      const monthNumber = now.getUTCMonth() + 1;
+      const year = now.getFullYear();
+      const thisMonthCalendarUrl = `/events/calendar/${year}-${monthNumber < 10 ? `0${monthNumber}` : monthNumber}`;
+      calendarMenuItem.setAttribute('href',  thisMonthCalendarUrl);
+    } else if (calendarMenuItem) {
+      calendarMenuItem.setAttribute('href', '/events/index.html');
+    }
+  });
+
+</script>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    function getSubMenu(button) {
+        const parentLI = button.closest('li');
+        const childUL = parentLI.querySelector('ul');
+        return childUL;
+    }
+    function initializeCustomMenuHeights(button) {
+        const childUL = getSubMenu(button);
+        const height = childUL?.scrollHeight;
+        childUL?.style?.setProperty?.('--expanded-height', `${height}px`);
+        childUL?.classList?.add?.('nested-nav--menu__mobile-hidden-collapsed');
+    }
+    function onNestedNavMenuTransitionEnd(e) {
+        const { target } = e;
+        if (!target?.hasAttribute?.('expanded')) {
+            target?.classList.add('nested-nav--menu__mobile-hidden-collapsed');
+        }
+    }
+
+    function onToggleButtonClick(e) {
+        const visibleClassName = 'opensearch-toggle-button-link__visible';
+        const visibleSelector = `.${visibleClassName}`;
+        const invisibleClassName = 'opensearch-toggle-button-link__invisible';
+        const invisibleSelector = `.${invisibleClassName}`;
+
+        const toggle = e.currentTarget;
+        const visibleLink = toggle.querySelector(visibleSelector);
+        const invisibleLink = toggle.querySelector(invisibleSelector);
+        visibleLink.classList.remove(visibleClassName);
+        visibleLink.classList.add(invisibleClassName);
+        invisibleLink.classList.remove(invisibleClassName);
+        invisibleLink.classList.add(visibleClassName);
+
+        const childUL = getSubMenu(toggle);
+        const isAlreadyExpanded = childUL?.getAttribute?.('expanded') ?? false;
+        if (childUL.classList.contains('nested-nav--menu__mobile-hidden-collapsed')) {
+            childUL?.classList?.remove?.('nested-nav--menu__mobile-hidden-collapsed');
+        }
+        window.setTimeout(() => childUL?.toggleAttribute?.('expanded'), 60);
+    }
+
+    document.querySelector('#top .navigation-container--nested-nav-wrapper--nested-nav')?.addEventListener?.('transitionend', onNestedNavMenuTransitionEnd);
+    const topNavigationToggleButtons = document.querySelectorAll('#top .opensearch-toggle-button--wrapper');
+    for (let i = 0; i < topNavigationToggleButtons.length; ++i) {
+        const button = topNavigationToggleButtons[i];
+        initializeCustomMenuHeights(button);
+        button.addEventListener('click', onToggleButtonClick);
+    }
+  });
+</script>
+
+
+
+
+
+
+<div class="copy-banner">
+    <div class="container ">
+        
+        
+        
+        <h1><a href="/blog">Blog</a></h1>
+    </div>
+</div>
+<div id="billboard"></div>
+
+
+<div class="container sidebar-right">
+  <div id="subwrap">
+    <div role="main">
+      <div id="content-main">
+        
+    <h1>The ABCs of semantic search in OpenSearch: Architectures, benchmarks, and combination strategies</h1>
+    
+    <div class="meta">
+        Thu, Mar 30, 2023 
+        
+        
+            &middot; 
+                
+                <em>Milind Shyani</em>, 
+            
+                
+                <em>Dhrubo Saha</em>, 
+            
+                
+                <em>Nina Mishra</em>, 
+            
+                
+                <em>Fanit Kolchina</em>
+            
+        
+    </div>
+
+    
+    <p>In an earlier <a href="https://opensearch.org/blog/semantic-search-solutions/">blog post</a>, we described different ways of building a semantic search engine in OpenSearch. In this post, we’ll dive further into the science behind it. We’ll discuss the benefits of combining keyword-based search with neural search, the architecture and model options, and benchmarking tests and results:</p>
+<ul>
+  <li>In <a href="#section-1-overview">Section 1</a>, we provide an overview of our proposed solutions and a summary of the main results.</li>
+  <li>In <a href="#section-2-obtaining-a-fine-tuned-transformer">Section 2</a>, we outline the steps needed to create a solution and fine-tune it for your own document corpus.</li>
+  <li>In <a href="#section-3-combination-methods">Section 3</a> and <a href="#section-4-normalization-and-other-combination-methods">Section 4</a>, we discuss the effects of different combination strategies and normalization protocols on search relevance.</li>
+  <li>In <a href="#section-5-strengths-and-limitations">Section 5</a>, we present the conclusions of our experiments.</li>
+  <li>In the <a href="#appendix">Appendix</a>, we provide more information about the test datasets used for benchmarking.</li>
+</ul>
+
+<h2 id="section-1-overview">Section 1: Overview</h2>
+
+<p>A search engine should work well for both <strong>keyword</strong> and <strong>natural language</strong> searches.</p>
+
+<p>BM25 excels at providing relevant search results when a query contains <strong>keywords</strong>. Keyword-based searches are extremely fast and robust but have natural drawbacks because keywords do not encapsulate natural language.</p>
+
+<p>Large neural networks, such as transformers, perform better when a query requires <strong>natural language</strong> understanding (for example, using synonyms). However, even the largest transformer models show performance degradation on data that does not belong to their train-data distribution.</p>
+
+<p>Both search methods have complementary strengths, so it is natural to investigate a solution that combines them. In addition, most document corpora contain documents that require keyword matching as well as semantic understanding. For example, an e-commerce shoe dataset should be searchable using highly specific keywords, such as <code class="language-plaintext highlighter-rouge">“12 US Men”</code>, and natural language phrases, such as <code class="language-plaintext highlighter-rouge">“fashionable comfortable running shoes”</code>.</p>
+
+<h3 id="a-metric-and-test-datasets-for-benchmarking">A metric and test datasets for benchmarking</h3>
+
+<p>To benchmark solutions, you must select a <strong>metric</strong> for measuring search relevance and the <strong>test datasets</strong>.</p>
+
+<p>We chose <a href="https://en.wikipedia.org/wiki/Discounted_cumulative_gain">nDCG@10</a>, a widely used information retrieval <strong>metric</strong>, for measuring search relevance.</p>
+
+<p>For the <strong>test datasets</strong>, we selected 10 different datasets covering a wide variety of domains, query lengths, document lengths, and corpus sizes. Each test dataset contains a list of queries, documents, and relevancy judgments. The relevancy judgments are annotated by human experts (see the <a href="#appendix">Appendix</a> for more information) and are usually represented by binary labels (<code class="language-plaintext highlighter-rouge">1</code> for relevant and <code class="language-plaintext highlighter-rouge">0</code> for irrelevant). Nine of these datasets belong to the <a href="https://arxiv.org/abs/2104.08663">BEIR</a> challenge—a popular collection of test datasets used to benchmark search engines. The tenth dataset is the <a href="https://github.com/amazon-science/esci-data">Amazon ESCI</a> challenge dataset for product search. These 10 datasets cover multiple domains, including e-commerce, COVID-19 statistics, personal finance, and quantum physics.</p>
+
+<h3 id="the-zero-shot-regime">The zero-shot regime</h3>
+
+<p>Because most search systems are deployed on datasets outside of their training data, we needed to benchmark our solutions on data that they have never encountered before, that is, in a <em>zero-shot regime</em>. Our models were trained exclusively on data distributions that do not overlap with the data distributions of the 10 test datasets. Note that this is different from training models using a train-dev-test split. There, the model is trained on the train split and evaluated on the held-out dev and test splits. In this experiment, the test dataset comes from a different distribution than the training set.</p>
+
+<h3 id="results-summary">Results summary</h3>
+
+<p>In an earlier <a href="https://opensearch.org/blog/semantic-search-solutions/">blog post</a>, we proposed two semantic search solutions: a pretrained transformer + BM25 and a fine-tuned transformer + BM25. In the following sections, we discuss the details of combining transformers with BM25. The following table summarizes the nDCG@10 benchmarking results on the 10 test datasets for the pretrained and fine-tuned transformer (TAS-B) when combined with BM25. For the definition of the combination strategies (harmonic mean, arithmetic mean, and geometric mean), see <a href="#section-3-combination-methods">Section 3</a>.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left"> </th>
+      <th>BM25</th>
+      <th>Pretrained transformer + BM25 (harmonic)</th>
+      <th>Fine-tuned transformer + BM25 (arithmetic)</th>
+      <th>Fine-tuned transformer + BM25 (geometric)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">NFCorpus</td>
+      <td>0.343</td>
+      <td>0.346</td>
+      <td><strong>0.369</strong></td>
+      <td>0.367</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Trec-Covid</td>
+      <td>0.688</td>
+      <td>0.731</td>
+      <td>0.752</td>
+      <td><strong>0.79</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">ArguAna</td>
+      <td>0.472</td>
+      <td>0.482</td>
+      <td><strong>0.527</strong></td>
+      <td>0.526</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">FiQA</td>
+      <td>0.254</td>
+      <td>0.281</td>
+      <td><strong>0.364</strong></td>
+      <td>0.350</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Scifact</td>
+      <td>0.691</td>
+      <td>0.673</td>
+      <td><strong>0.728</strong></td>
+      <td>0.727</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">DBPedia</td>
+      <td>0.313</td>
+      <td><strong>0.395</strong></td>
+      <td>0.373</td>
+      <td>0.392</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Quora</td>
+      <td>0.789</td>
+      <td>0.847</td>
+      <td><strong>0.874</strong></td>
+      <td>0.872</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Scidocs</td>
+      <td>0.165</td>
+      <td>0.173</td>
+      <td><strong>0.184</strong></td>
+      <td><strong>0.184</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">CQADupStack</td>
+      <td>0.325</td>
+      <td>0.333</td>
+      <td>0.3673</td>
+      <td><strong>0.377</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Amazon ESCI</td>
+      <td>0.081</td>
+      <td>0.088</td>
+      <td><strong>0.091</strong></td>
+      <td><strong>0.091</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><strong>Average performance <br />against BM25</strong></td>
+      <td><strong>N/A</strong></td>
+      <td><strong>6.42%</strong></td>
+      <td><strong>14.14%</strong></td>
+      <td><strong>14.93%</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>In <a href="#section-2-obtaining-a-fine-tuned-transformer">Section 2</a> we discuss the details of obtaining a fine-tuned transformer. If you’re interested in the result details, skip to <a href="#section-3-combination-methods">Section 3</a> and <a href="#section-4-normalization-and-other-combination-methods">Section 4</a>.</p>
+
+<h2 id="section-2-obtaining-a-fine-tuned-transformer">Section 2: Obtaining a fine-tuned transformer</h2>
+
+<p>To understand the fine-tuned solution, we first need to explore the pretrained solution along with its strengths and limitations. Our pretrained solution consists of a state-of-the-art neural retriever model combined with BM25. We experimentally compared different ways of combining the neural retriever model with BM25 to produce the best results.</p>
+
+<p>A neural retriever model first creates a vector index of all the documents in the corpus and then at runtime conducts a search using a k-NN query. The model has been trained to map relevant documents close to each other and irrelevant documents farther apart by reading the labeled <code class="language-plaintext highlighter-rouge">(query, passage)</code> pairs. Recall that in a zero-shot regime, training data is different from the test datasets. <a href="https://huggingface.co/sentence-transformers/msmarco-distilbert-base-tas-b">TAS-B</a> is a popular state-of-the-art model that is trained on the <a href="https://huggingface.co/datasets/ms_marco">MS Marco</a> dataset; it has been shown to have non-trivial zero-shot performance [2]. It uses the <a href="https://huggingface.co/docs/transformers/model_doc/distilbert">DistilBert</a> checkpoint and has 66 million parameters and an embedding dimension of 768.</p>
+
+<p>There are other models, such as <a href="https://huggingface.co/docs/transformers/model_doc/mpnet">MPNet</a>, that show equivalent or better performance. These models are trained on a lot of data, which includes some of the test datasets, so it is difficult to benchmark them in terms of zero-shot performance.</p>
+
+<p>Note that one of the reasons we work in a zero-shot regime is that we often do not have access to supervised data from the domain of choice. To be precise, we have passages from the domain of choice but do not have access to queries or <code class="language-plaintext highlighter-rouge">(query, relevant passage)</code> pairs. If such data existed, the ideal solution would have been to use it to fine-tune a transformer model. A fine-tuned transformer would certainly perform better than a pretrained transformer [2].</p>
+
+<p>However, in the absence of domain-specific data, we can leverage the power of large language models (LLMs) to create artificial queries when given a passage. In the rest of this section, we discuss generating synthetic queries and using them to obtain a model fine-tuned to your corpus. As shown in the preceding table, fine-tuned models perform better than pretrained models.</p>
+
+<p>Creating a fine-tuned model consists of three steps:</p>
+
+<ol>
+  <li>Obtain an LLM for query generation.</li>
+  <li>Use the query generator model to create synthetic queries given a corpus.</li>
+  <li>Train a small model (such as TAS-B) on the synthetic corpus.</li>
+</ol>
+
+<p>The <a href="https://opensearch-project.github.io/opensearch-py-ml/examples/demo_transformer_model_train_save_upload_to_openSearch.html">Demo Notebook for Sentence Transformer Model Training, Saving and Uploading to OpenSearch</a> automatically performs all of these steps for the corpus of your choice.</p>
+
+<p><strong><em>Over time, we plan to release newer, more powerful LLMs for query generation that will produce better synthetic queries and lead to improved downstream search performance.</em></strong></p>
+
+<h3 id="21-obtaining-a-query-generator-model">2.1. Obtaining a query generator model</h3>
+
+<p>There are many publicly available LLMs that can be used for free-form text generation. However, there are very few models that are trained to generate queries. To the best of our knowledge, there is no public GPT-style (that is, decoder only) LLM for query generation.</p>
+
+<p>We fine-tuned and released the 1.5B GPT2-XL model that you can <a href="https://artifacts.opensearch.org/models/ml-models/amazon/gpt/GPT2_xl_sqg/1.0.0/GPT2_xl_sqg.zip">download</a> for synthetic query generation. This model is automatically downloaded by the demo notebook. The model is fine-tuned using the MS Marco and <a href="https://huggingface.co/datasets/natural_questions">Natural Questions</a> (NQ) datasets. These datasets are famous, high-quality datasets in the field of information retrieval. They consist of human-generated queries and corresponding passages or documents that answer each query. For every <code class="language-plaintext highlighter-rouge">(query, passage)</code> pair, we created the following training sample:</p>
+
+<p><code class="language-plaintext highlighter-rouge">&lt;startoftext&gt; passage &lt;QRY&gt; query &lt;endoftext&gt;</code></p>
+
+<p>In the preceding expression, the special tokens enclosed in angle brackets denote the start of text, start of query, and end of text, respectively. The loss function is the <a href="https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf">autoregressive</a> <a href="https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html">cross-entropy</a> loss, that is, the model tries to predict the next word given previous words. We used the <a href="https://pytorch.org/docs/stable/generated/torch.optim.AdamW.html">AdamW</a> optimizer with a learning rate of 2e-5 and a <a href="https://huggingface.co/docs/transformers/main_classes/optimizer_schedules#transformers.get_linear_schedule_with_warmup">linear schedule</a> with 5,500 warmup steps. Training was performed on 8 Tesla V100 GPUs with a batch size of 24 for 4 epochs.</p>
+
+<p>We only used those samples from NQ that have long answers and do not contain tables, producing approximately 110K <code class="language-plaintext highlighter-rouge">(passage, query)</code> pairs with a median passage length of 104 words. For MS Marco, we used the train and validation splits to obtain 559K <code class="language-plaintext highlighter-rouge">(passage, query)</code> pairs with a median passage length of 52 words.</p>
+
+<h3 id="22-creating-a-synthetic-corpus">2.2. Creating a synthetic corpus</h3>
+
+<p>After downloading the model, the demo notebook uses it to generate synthetic data.</p>
+
+<p>We recommend running the notebook on a GPU-powered machine; we used a p3.x16large EC2 instance that has 8 16 GB GPUs.</p>
+
+<p>The total time required to generate 16 queries per document for 1M documents is about 48 hours. The generation time scales linearly with the number of documents and can be improved by using larger batch sizes.</p>
+
+<p>During the generation phase we sampled tokens with a default temperature of 1, top-p value of 0.95, and top-k value of 50. From the model’s perspective, tokens are the atomic elements of a sentence. They are similar to words, except a word can be split into multiple tokens. Splitting words into tokens ensures that the vocabulary size does not grow very large. For instance, if a language consists of only four words—“internet”, “international”, “net”, and “national”—we can save space by splitting these words into three tokens: “inter”, “national”, and “net”.</p>
+
+<p>For more information about these hyperparameters and how they affect text generation, see <a href="https://huggingface.co/blog/how-to-generate">this Hugging Face blog post</a>. Intuitively, higher temperature, top-k, or top-p values yield more diverse samples. We specified the maximum length of the generated query as 25 tokens. Additionally, we set the <code class="language-plaintext highlighter-rouge">repetition_penalty</code> to 1.2, thus incentivizing the model to create queries with no repeating tokens. Once the queries are generated, the notebook automatically applies a query filtering model to remove toxic queries using the publicly available <a href="https://pypi.org/project/detoxify/">Detoxify</a> package.</p>
+
+<h3 id="23-fine-tuning-tas-b-on-the-synthetic-corpus">2.3. Fine-tuning TAS-B on the synthetic corpus</h3>
+
+<p>The synthetic corpus created in the previous step is used to fine-tune a pretrained small language model for search. The demo notebook downloads the pretrained TAS-B model and performs the remaining steps automatically. The model is trained to maximize the dot product between relevant queries and passages while at the same time minimizing the dot product between queries and irrelevant passages. This is known in the literature as <em>contrastive learning.</em></p>
+
+<p>We implemented contrastive learning using in-batch negatives and a symmetric loss. The loss is defined for a given batch \(B\), where a <em>batch</em> is a subset of query-passage pairs. Let \(p\) be a vector representation of a passage and \(q\) be a vector representation of a query. Let \(Q\) be a collection of queries in a batch \(B\), such that \(Q = \{q_1​,q_2​,\dots,q_{∣B∣​}\}\). Further, let \(P\) be a collection of passages, such that \(P = \{p_1​,p_2,\dots,p_{∣B∣​}\}\). The loss \(\mathcal L\) for a batch \(B\) is given by</p>
+
+\[\begin{align}
+\mathcal L = C(Q, P) + C(P​, Q) \tag{1} \label{1},
+\end{align}\]
+
+<p>where</p>
+
+\[\begin{align}
+C(Q​, P) = −\sum_{i=1}^{|B|}​log \left(\frac{sim(q_i​,p_i​)}{sim(q_i​,p_i​) + \sum_{j \neq i}^{|B|}sim(q_i​,p_j​)}​\right) \tag{2} \label{2}
+\end{align}\]
+
+<p>and</p>
+
+\[\begin{align}
+sim(q​, p) =  \exp(q^T \cdot p). \tag{3}
+\end{align}\]
+
+<p>The total loss is the sum of the losses across all batches.</p>
+
+<p>Note that many models are trained using the dot product similarity (not cosine similarity), so the query and passage vectors are not necessarily normalized. For a given batch, the loss consists of the two terms \(C(Q,P)\) and \(C(P,Q)\). In equation \((\ref{2})\), \(C(Q,P)\) is not symmetric in \(Q\) and \(P\) because the sums over \(i\) and \(j\) do not commute. Combining the two terms in equation \((\ref{1})\) makes the loss symmetric.</p>
+
+<p>The loss is minimized as the argument of the logarithm in equation \((\ref{2})\) approaches 1. In other words, minimizing \(C(Q,P)\) is equivalent to maximizing \(sim(q_i​,p_i​)\) and minimizing \(sim(q_i​,p_j​)\) for \(i\neq​j\). Here we are assuming that if the data is shuffled randomly, the queries \(q_i\)​ and passages \(p_j\)​ within a batch \(B\) are unrelated to each other for \(i\neq​j\). To achieve this goal, the model will learn to map the relevant query and passage pairs \((q_i​,p_i​)\) close to each other and irrelevant pairs \((q_i​,p_j​)\) farther apart. This technique, known as <em>in-batch negative sampling</em>, is widely used for training dense retrievers [7].</p>
+
+<p>The model is trained using the AdamW optimizer for 10 epochs with a learning rate of 2e-5 and a scheduler that uses a linear schedule with 10K warmup steps. Larger batch sizes lead to more in-batch negatives, which in turn lead to better models. On the other hand, larger batch sizes also may cause GPU out-of-memory issues and should be selected based on GPU memory. We also found that increasing the number of synthetic queries per passage produces better fine-tuned models. However, having a large number of synthetic queries comes with the cost of longer generation and training times, to the point of diminishing returns. On average, we created 24 queries per document in our experiments.</p>
+
+<h2 id="section-3-combination-methods">Section 3: Combination methods</h2>
+
+<p>We combined transformers with BM25 using three main methods: arithmetic mean, geometric mean, and harmonic mean. For each of these combination methods, we retrieved the top 9,999 documents for BM25 and the top 250 documents for <a href="https://opensearch.org/docs/latest/search-plugins/neural-search/">neural query</a>. Each set of scores was normalized by the L2 norm. To be precise, given a list of scores \(b=[b_1​, b_2​, \dots]\), we normalized them using the following formula:</p>
+
+\[\begin{align}
+\tilde{b_i}​=\frac{b_i}{​{\lVert b \rVert}_2}.
+\end{align}\]
+
+<p>Given a list of scores \(b\) for BM25 and \(n\) for neural search, we can calculate their combined score \(s\) as follows:</p>
+
+\[\begin{align}
+s_i​=\left\{
+\begin{array}{ll}
+      \frac{\tilde{b_i}+\tilde{n_i}}{2}, &amp; arithmetic\ mean \\
+      \sqrt{\tilde{b_i}\tilde{n_i}}, &amp; geometric\ mean \\
+      \frac{2\tilde{b_i}\tilde{n_i}}{\tilde{b_i}+\tilde{n_i}}, &amp; harmonic\ mean. \\
+\end{array} 
+\right.
+\end{align}\]
+
+<p>The fine-tuned models have been trained for 10 epochs on the synthetic queries created by the query generator. For smaller datasets, such as NFCorpus, ArguAna, and FiQA, we created 32 queries per passage, while for larger datasets we created fewer queries per passage. In particular, we created 26 queries per passage for CQADupStack and 16 for Amazon ESCI.</p>
+
+<p>The following table contains the results of combining these scores on the 10 test datasets.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">                                   </th>
+      <th>BM25</th>
+      <th>TAS-B</th>
+      <th>TAS-B with L2 norm (arithmetic mean)</th>
+      <th>TAS-B with L2 norm (harmonic mean)</th>
+      <th>TAS-B with L2 norm (geometric mean)</th>
+      <th>Fine-tuned</th>
+      <th>Fine-tuned with L2 norm (arithmetic mean)</th>
+      <th>Fine-tuned with L2 norm (harmonic mean)</th>
+      <th>Fine-tuned with L2 norm (geometric mean)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">NFCorpus</td>
+      <td>0.343</td>
+      <td>0.319</td>
+      <td>0.346</td>
+      <td>0.35</td>
+      <td>0.348</td>
+      <td>0.301</td>
+      <td>0.37</td>
+      <td>0.365</td>
+      <td><strong>0.367</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Trec-Covid</td>
+      <td>0.688</td>
+      <td>0.481</td>
+      <td>0.732</td>
+      <td>0.731</td>
+      <td>0.735</td>
+      <td>0.577</td>
+      <td>0.752</td>
+      <td>0.788</td>
+      <td><strong>0.79</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">ArguAna</td>
+      <td>0.473</td>
+      <td>0.427</td>
+      <td>0.485</td>
+      <td>0.482</td>
+      <td>0.484</td>
+      <td>0.492</td>
+      <td><strong>0.527</strong></td>
+      <td>0.511</td>
+      <td>0.526</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">FiQA</td>
+      <td>0.254</td>
+      <td>0.3</td>
+      <td>0.289</td>
+      <td>0.281</td>
+      <td>0.282</td>
+      <td>0.314</td>
+      <td><strong>0.364</strong></td>
+      <td>0.326</td>
+      <td>0.35</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Scifact</td>
+      <td>0.691</td>
+      <td>0.643</td>
+      <td>0.686</td>
+      <td>0.691</td>
+      <td>0.687</td>
+      <td>0.623</td>
+      <td><strong>0.728</strong></td>
+      <td>0.722</td>
+      <td>0.728</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">DBPedia</td>
+      <td>0.32</td>
+      <td>0.384</td>
+      <td>0.341</td>
+      <td><strong>0.395</strong></td>
+      <td>0.359</td>
+      <td>0.342</td>
+      <td>0.373</td>
+      <td>0.392</td>
+      <td>0.392</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Quora</td>
+      <td>0.789</td>
+      <td>0.835</td>
+      <td>0.836</td>
+      <td>0.847</td>
+      <td>0.841</td>
+      <td>0.855</td>
+      <td><strong>0.874</strong></td>
+      <td>0.87</td>
+      <td>0.872</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Scidocs</td>
+      <td>0.165</td>
+      <td>0.149</td>
+      <td>0.17</td>
+      <td>0.17</td>
+      <td>0.17</td>
+      <td>0.154</td>
+      <td><strong>0.184</strong></td>
+      <td>0.181</td>
+      <td><strong>0.184</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">CQADupStack</td>
+      <td>0.325</td>
+      <td>0.314</td>
+      <td>0.343</td>
+      <td>0.337</td>
+      <td>0.34</td>
+      <td>0.357</td>
+      <td>0.367</td>
+      <td>0.352</td>
+      <td><strong>0.377</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Amazon ESCI</td>
+      <td>0.081</td>
+      <td>0.071</td>
+      <td>0.085</td>
+      <td>0.088</td>
+      <td>0.087</td>
+      <td>0.074</td>
+      <td><strong>0.091</strong></td>
+      <td>0.09</td>
+      <td><strong>0.091</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><strong>Average % change vs. BM25</strong></td>
+      <td>N/A</td>
+      <td>-3.52</td>
+      <td>4.89</td>
+      <td>6.7</td>
+      <td>5.49</td>
+      <td>-0.08</td>
+      <td>14.14</td>
+      <td>12.37</td>
+      <td><strong>14.91</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Overall, a fine-tuned model with an arithmetic or geometric combination provides a boost of almost 15% in terms of nDCG@10 over traditional keyword search (BM25).</p>
+
+<p>We found that harmonic combination works best for the pretrained TAS-B model, while arithmetic and geometric combinations work best for the fine-tuned custom model. Note that for a given query, there could be documents that are only present in the dense results and not in the BM25 results. In such cases, we assume that the BM25 score for those documents is zero. Conversely, if there are documents that are only present in the BM25 results, we assume that the neural query score for those documents is zero.</p>
+
+<h2 id="section-4-normalization-and-other-combination-methods">Section 4: Normalization and other combination methods</h2>
+
+<p>BM25 and neural scores use different scales, so there is no unique strategy for normalizing both of them. In this section, we empirically demonstrate the effects of normalization on nDCG@10 to build intuition for the most useful and robust strategy.</p>
+
+<h3 id="41-no-normalization-compared-to-l2-normalization">4.1. No normalization compared to L2 normalization</h3>
+
+<p>We compared the effects of applying min-max normalization against not applying any normalization at all, as shown in the following table.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">    </th>
+      <th>BM25</th>
+      <th>TAS-B harmonic with norm</th>
+      <th>TAS-B harmonic without norm</th>
+      <th>Fine-tuned arithmetic with norm</th>
+      <th>Fine-tuned arithmetic without norm</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">NFCorpus</td>
+      <td>0.343</td>
+      <td>0.35</td>
+      <td>0.345</td>
+      <td><strong>0.37</strong></td>
+      <td>0.353</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Trec-Covid</td>
+      <td>0.688</td>
+      <td>0.731</td>
+      <td>0.73</td>
+      <td><strong>0.752</strong></td>
+      <td>0.666</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">ArguAna</td>
+      <td>0.472</td>
+      <td>0.482</td>
+      <td>0.483</td>
+      <td><strong>0.527</strong></td>
+      <td>0.519</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">FiQA</td>
+      <td>0.254</td>
+      <td>0.281</td>
+      <td>0.274</td>
+      <td><strong>0.364</strong></td>
+      <td>0.326</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Scifact</td>
+      <td>0.691</td>
+      <td>0.691</td>
+      <td>0.681</td>
+      <td><strong>0.728</strong></td>
+      <td>0.665</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">DBPedia</td>
+      <td>0.32</td>
+      <td><strong>0.395</strong></td>
+      <td>0.338</td>
+      <td>0.373</td>
+      <td>0.363</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Quora</td>
+      <td>0.789</td>
+      <td>0.847</td>
+      <td>0.82</td>
+      <td><strong>0.874</strong></td>
+      <td>0.864</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Scidocs</td>
+      <td>0.165</td>
+      <td>0.17</td>
+      <td>0.168</td>
+      <td><strong>0.184</strong></td>
+      <td>0.165</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">CQADupStack</td>
+      <td>0.325</td>
+      <td>0.337</td>
+      <td>0.333</td>
+      <td><strong>0.367</strong></td>
+      <td>0.331</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Amazon ESCI</td>
+      <td>0.081</td>
+      <td>0.088</td>
+      <td>0.083</td>
+      <td><strong>0.091</strong></td>
+      <td>0.079</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><strong>Average % change vs. BM25</strong></td>
+      <td>N/A</td>
+      <td>6.72</td>
+      <td>3.17</td>
+      <td><strong>14.16</strong></td>
+      <td>5.66</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>We found that in all cases, normalizing the scores before combining them leads to better results, possibly because BM25 and dense models usually have scores that belong to different scales. Not normalizing the scores may lead to BM25 overwhelming dense models or vice versa during the combination phase. Both BM25 and dense models are impressive retrievers and have complementary strengths. Normalizing the scores calibrates the two retrievers and thus leads to better results.</p>
+
+<h3 id="42-comparing-normalization-strategies">4.2. Comparing normalization strategies</h3>
+
+<p>We investigated different normalization strategies. In addition to L2, we tried sklearn’s <a href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html">minmax scaler</a>, which normalizes the scores as</p>
+
+\[\begin{align}
+\tilde{b_i} = \frac{{b_i}-min(b)}{max(b) - min(b)}.
+\end{align}\]
+
+<p>The results are presented in the following table.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left"> </th>
+      <th>BM25</th>
+      <th>TAS-B harmonic with min-max norm</th>
+      <th>TAS-B harmonic with L2 norm</th>
+      <th>Fine-tuned arithmetic with min-max norm</th>
+      <th>Fine-tuned  arithmetic with L2 norm</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">NFCorpus</td>
+      <td>0.343</td>
+      <td>0.357</td>
+      <td>0.35</td>
+      <td>0.365</td>
+      <td><strong>0.37</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Trec-Covid</td>
+      <td>0.688</td>
+      <td>0.737</td>
+      <td>0.731</td>
+      <td><strong>0.727</strong></td>
+      <td><strong>0.727</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">FiQA</td>
+      <td>0.254</td>
+      <td>0.32</td>
+      <td>0.281</td>
+      <td>0.359</td>
+      <td><strong>0.364</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">ArguAna</td>
+      <td>0.472</td>
+      <td>0.476</td>
+      <td>0.482</td>
+      <td><strong>0.531</strong></td>
+      <td>0.527</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Scifact</td>
+      <td>0.691</td>
+      <td>0.688</td>
+      <td>0.691</td>
+      <td>0.722</td>
+      <td><strong>0.728</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Scidocs</td>
+      <td>0.165</td>
+      <td>0.168</td>
+      <td>0.17</td>
+      <td>0.182</td>
+      <td><strong>0.184</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Quora</td>
+      <td>0.789</td>
+      <td>0.861</td>
+      <td>0.847</td>
+      <td><strong>0.877</strong></td>
+      <td>0.874</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Amazon ESCI</td>
+      <td>0.081</td>
+      <td>0.087</td>
+      <td>0.088</td>
+      <td><strong>0.091</strong></td>
+      <td><strong>0.091</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><strong>Average % change vs. BM25</strong></td>
+      <td>N/A</td>
+      <td>6.99</td>
+      <td>5.01</td>
+      <td>13.03</td>
+      <td><strong>13.56</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>For the pretrained harmonic combination model, on average, the min-max norm works better than L2. However, for the fine-tuned arithmetic combination model, we did not find a conclusive difference between the two normalization strategies.</p>
+
+<h3 id="43-combining-scores-differently">4.3. Combining scores differently</h3>
+
+<p>We experimented with different score combination methods. One such method is linear combination, where scores are calculated as</p>
+
+\[\begin{align}
+{s_i} = \tilde{b_i} + f \cdot \tilde{n_i},
+\end{align}\]
+
+<p>where \(f\) is a float that ranges from 0.1 to 1,024 in powers of 2 and \(b_i\) ​and \(n_i\) ​are the min-max normalized BM25 and neural scores, respectively. We found that for the fine-tuned models, \(f\) = 1 works best. Note that this is identical to the arithmetic combination. For the pretrained models, we found that \(f\) = 8 works better. For more information, see the <a href="#linear-combination-experiment-results">linear combination experiment results</a>.</p>
+
+<h3 id="44-other-comparisons">4.4. Other comparisons</h3>
+
+<p>We explored using <a href="https://pytorch.org/docs/stable/generated/torch.nn.CosineSimilarity.html">cosine similarity</a> instead of dot product for the neural retriever, but it led to worse results. This is probably because TAS-B was trained using dot product similarity instead of cosine similarity.</p>
+
+<p>Among other neural models, we tried the <a href="https://huggingface.co/sentence-transformers/msmarco-roberta-base-ance-firstp">ANCE</a> model, but it lead to substantially worse results than TAS-B. We did not benchmark the <a href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2">MiniLM</a> or <a href="https://huggingface.co/sentence-transformers/all-mpnet-base-v2">MPNet</a> models because both were tuned on the 1B sentence pair data and thus could not be evaluated in a zero-shot regime. Nevertheless, we evaluated them after fine-tuning on synthetic data using private test datasets and found the performance to be almost as good as TAS-B.</p>
+
+<h2 id="section-5-strengths-and-limitations">Section 5: Strengths and limitations</h2>
+
+<p>There are two ways of incorporating transformers in search: as <strong>cross-encoders</strong> and <strong>neural retrievers</strong>.</p>
+
+<p><strong>Cross-encoders</strong> work in series with keyword search and can be thought of as rerankers. Once BM25 fetches the top \(N\) results for a given query, a cross-encoder reranks these \(N\) results given the query \(q\). This approach generally produces better results than using neural retrievers alone. However, it is computationally expensive (high latency) because the transformer needs to compute \(N\) different scores, one for each <code class="language-plaintext highlighter-rouge">(query, document)</code> pair. The cross-encoder is also limited by the result quality of the BM25 retrieval.</p>
+
+<p>In contrast, <strong>neural retrievers</strong> have to perform only one computation that creates a vector for the query. The actual retrieval is accomplished by finding the top \(N\) nearest neighbors of this query vector. This is a very fast operation that is implemented using <a href="https://opensearch.org/docs/latest/search-plugins/knn/index/">k-NN</a>. Note that neural retrievers do not rely on keyword results but rather are used in combination with keyword search. Indeed, neural retrievers combined with BM25 yield better results than cross-encoders, as shown by our experiments. It is also worth noting that cross-encoders work in the reranker paradigm and rely on first-stage retrieval. They greatly benefit from combining BM25 and dense retrievers, discussed earlier in this post, for their first-stage retrieval.</p>
+
+<p>In this blog post, we have included several experiments that can help build intuition about how and when to combine BM25 with neural retrievers. It is important to remember that because every dataset is different, there is a chance that the configurations used here are not optimal for your dataset. Nevertheless, we believe that there are some <strong>global conclusions</strong> that apply to most datasets:</p>
+
+<ol>
+  <li>Neural retrievers with BM25 work better than neural retrievers or BM25 alone.</li>
+  <li>Neural retrievers with BM25 deliver the same (or better) results as cross-encoders at a fraction of the cost and latency.</li>
+  <li>If a dataset contains a lot of keyword usage, BM25 works much better than neural retrievers. An example of such a dataset is one containing factory part numbers.</li>
+  <li>If a dataset contains a lot of natural language, neural retrievers work much better than BM25. An example is data from a community forum.</li>
+  <li>For datasets that contain both natural language and keywords, a combination of BM25 and neural retrievers works better. An example of such a dataset is one containing data for a clothing website that describes products using both natural language (product description) and numbers (product length, size, or weight).</li>
+  <li>The optimal combination method depends on the dataset. In general, we have found that harmonic mean performs best for pretrained models, while arithmetic mean and geometric mean perform best for fine-tuned models.</li>
+  <li>Most small transformer models, such as TAS-B, have a context length of 512 tokens (about 350 words), and they ignore all words after that limit. If a document is long and the first few hundred words are not representative of its content, it is useful to split the document into multiple sections. Note that the index size will increase accordingly because each section corresponds to its own vector.</li>
+</ol>
+
+<h2 id="appendix">Appendix</h2>
+
+<p>In this appendix, we provide further details of the test datasets used for benchmarking. Our primary data sources were the BEIR challenge and the Amazon ESCI datasets.</p>
+
+<h3 id="the-beir-dataset">The BEIR dataset</h3>
+
+<p>The BEIR challenge dataset was introduced in a <a href="https://arxiv.org/abs/2104.08663">2021 paper presented at NeurIPS</a>. It consists of 18 test datasets that cover several domains, from personal advice on Yahoo Answers to Stack Exchange questions about quantum physics. The datasets also come in different evaluation formats, for example, fact checking, question answering, and news retrieval. We used nine of the 19 datasets from the BEIR challenge. We did not use the MS Marco and NQ datasets because the query generator was trained on this data, so it is not zero shot. We did not benchmark on datasets that are not publicly available without registration (BioASQ, Signal-1M, Trec-News, and Robust04). In the future, we plan to benchmark large (more than 5M documents each) datasets, such as fever, climate-fever, and HotpotQA.</p>
+
+<h3 id="the-amazon-esci-dataset">The Amazon ESCI dataset</h3>
+
+<p><a href="https://github.com/amazon-science/esci-data">Amazon ESCI</a> is a shopping query dataset from Amazon. It contains difficult search queries and was released with the goal of fostering research in the area of semantic matching of queries and products. We restricted the data to queries and documents in English. We focused on the task of query-product ranking: given a user-specified query and a list of matched products, the goal is to rank the products by relevance. We used <code class="language-plaintext highlighter-rouge">Task 1 (Query-Product Ranking)</code> with product_locale = US and set the following relevancy ratings: E = 100, S = 10, C = 1, and I = 0. Note that the relevancy ratings in the <a href="https://arxiv.org/abs/2206.06588">Amazon ESCI paper by Reddy et al.</a> are E = 1, S = 0.1, C = 0.01, and I = 0. Consequently, we cannot directly compare our nDCG scores with the ones mentioned in the Amazon paper. However, the percentage improvement between different models (such as the one shown in the preceding tables) is still a meaningful comparison.</p>
+
+<h3 id="sample-queries-and-passages">Sample queries and passages</h3>
+
+<p>The following table provides sample queries and passages for each dataset.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Dataset</th>
+      <th style="text-align: left">Sample query</th>
+      <th style="text-align: left">Sample passage</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">DBPedia</td>
+      <td style="text-align: left">Szechwan dish food cuisine</td>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">Mapo doufu (or \"mapo tofu\") is a popular Chinese dish from China's Sichuan province. It consists of tofu set in a spicy chili- and bean-based sauce, typically a thin, oily, and ....</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">FiQA</td>
+      <td style="text-align: left">“Business day” and “due date” for bills</td>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">I don't believe Saturday is a business day either. When I deposit a check at a bank's drive-in after 4pm Friday, the receipt tells me it will credit as if I deposited on Monday. If a business' computer doesn't adjust their billing to have a weekday due date ...	</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">CQADupStack</td>
+      <td style="text-align: left">Why does Simplify[b-a] give -a+b and not b-a?</td>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">`Simplify[b - a]` results in `-a + b`. I prefer `b - a`, which is a bit simpler (3 symbols instead of 4). Can I make _Mathematica_ to think the same way? I believe one needs ...</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">NFCorpus</td>
+      <td style="text-align: left">How Doctors Responded to Being Named a Leading Killer</td>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">By the end of graduate medical training, novice internists (collectively known as the housestaff) were initiated into the experience of either having done something to a patient which had a deleterious consequence or else having witnessed colleagues do the same. When these events occurred ...</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Scifact</td>
+      <td style="text-align: left">β-sheet opening occurs during pleurotolysin pore formation.</td>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">Membrane attack complex/perforin-like (MACPF) proteins comprise the largest superfamily of pore-forming proteins, playing crucial roles in immunity and pathogenesis. Soluble monomers assemble into large transmembrane ...</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Trec-Covid</td>
+      <td style="text-align: left">what is the origin of COVID-19</td>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">Although primary genomic analysis has revealed that severe acute respiratory syndrome coronavirus (SARS CoV) is a new type of coronavirus, the different protein trees published in previous reports have provided ....</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">ArguAna</td>
+      <td style="text-align: left">Poaching is becoming more advanced A stronger, militarised approach is needed as poaching is becoming …</td>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">Tougher protection of Africa\u2019s nature reserves will only result in more bloodshed. Every time the military upgrade their weaponry, tactics and logistic, the poachers improve their own methods to counter ...</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Quora</td>
+      <td style="text-align: left">Is heaven a really nice place?</td>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">What do you think heaven will be like?</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Scidocs</td>
+      <td style="text-align: left">CFD Analysis of Convective Heat Transfer Coefficient on External Surfaces of Buildings</td>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">This paper provides an overview of the application of CFD in building performance simulation for the outdoor environment, focused on four topics...</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Amazon ESCI</td>
+      <td style="text-align: left">#1 black natural hair dye without ammonia or peroxide</td>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">6N - Sagebrush BrownNaturcolor Haircolor Hair Dye - Sagebrush Brown, 4 Fl Oz (6N)contains no ammonia, resorcinol or parabens\navailable in 31 colors, each color ... </code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="dataset-statistics">Dataset statistics</h3>
+
+<p>The following table provides statistics about passages and queries for each dataset.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Dataset</th>
+      <th>Average query length</th>
+      <th>Median query Length</th>
+      <th>Average passage length</th>
+      <th>Median passage Length</th>
+      <th>Number of passages</th>
+      <th>Number of test queries</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">DBPedia</td>
+      <td>5.54</td>
+      <td>5</td>
+      <td>46.89</td>
+      <td>47</td>
+      <td>4635922</td>
+      <td>400</td>
+    </tr>
+  </tbody>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Quora</td>
+      <td>9.531</td>
+      <td>9</td>
+      <td>11.46</td>
+      <td>10</td>
+      <td>522931</td>
+      <td>10000</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">FiQA</td>
+      <td>10.94</td>
+      <td>10</td>
+      <td>132.9</td>
+      <td>90</td>
+      <td>57638</td>
+      <td>648</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">CQADupStack</td>
+      <td>8.53</td>
+      <td>8</td>
+      <td>126.59</td>
+      <td>68</td>
+      <td>457199</td>
+      <td>13145</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">NFCorpus</td>
+      <td>3.29</td>
+      <td>2</td>
+      <td>22.098</td>
+      <td>224</td>
+      <td>3633</td>
+      <td>323</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Scifact</td>
+      <td>12.51</td>
+      <td>12</td>
+      <td>201.81</td>
+      <td>192</td>
+      <td>300</td>
+      <td>5183</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Trec-Covid</td>
+      <td>10.6</td>
+      <td>10</td>
+      <td>148.64</td>
+      <td>155</td>
+      <td>171332</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">ArguAna</td>
+      <td>193.55</td>
+      <td>174</td>
+      <td>164.19</td>
+      <td>147</td>
+      <td>8674</td>
+      <td>1406</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Scidocs</td>
+      <td>9.44</td>
+      <td>9</td>
+      <td>167.24</td>
+      <td>151</td>
+      <td>25657</td>
+      <td>1000</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Amazon ESCI</td>
+      <td>3.89</td>
+      <td>4</td>
+      <td>179.87</td>
+      <td>137</td>
+      <td>482105</td>
+      <td>8956</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="linear-combination-experiment-results">Linear combination experiment results</h3>
+
+<p>The following table contains the results of the experiments for different linear combinations \(s_i​=\tilde{b_i}​+f\cdot \tilde{n_i}\)​.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">   </th>
+      <th>BM25</th>
+      <th>TASB with factors 0.1</th>
+      <th>TASB with factor 1 (arithmetic mean)</th>
+      <th>TASB with factors 2</th>
+      <th>TASB with factors 8</th>
+      <th>TASB with factors 128</th>
+      <th>TASB with factors 1024</th>
+      <th>Fine-tuned with factors 0.1</th>
+      <th>Fine-tuned with factor 1 (arithmetic mean)</th>
+      <th>Fine-tuned with factors 2</th>
+      <th>Fine-tuned with factors 8</th>
+      <th>Fine-tuned with factors 128</th>
+      <th>Fine-tuned with factors 1024</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">NFCorpus</td>
+      <td>0.343</td>
+      <td>0.329</td>
+      <td>0.346</td>
+      <td>0.334</td>
+      <td>0.343</td>
+      <td>0.335</td>
+      <td>0.324</td>
+      <td>0.336</td>
+      <td>0.369</td>
+      <td>0.34</td>
+      <td>0.322</td>
+      <td>0.304</td>
+      <td>0.301</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">FiQA</td>
+      <td>0.254</td>
+      <td>0.273</td>
+      <td>0.289</td>
+      <td>0.3</td>
+      <td>0.327</td>
+      <td>0.303</td>
+      <td>0.3</td>
+      <td>0.311</td>
+      <td>0.364</td>
+      <td>0.352</td>
+      <td>0.329</td>
+      <td>0.314</td>
+      <td>0.314</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">ArguAna</td>
+      <td>0.472</td>
+      <td>0.476</td>
+      <td>0.485</td>
+      <td>0.49</td>
+      <td>0.485</td>
+      <td>0.437</td>
+      <td>0.428</td>
+      <td>0.497</td>
+      <td>0.527</td>
+      <td>0.516</td>
+      <td>0.494</td>
+      <td>0.48</td>
+      <td>0.479</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Amazon ESCI</td>
+      <td>0.081</td>
+      <td>0.082</td>
+      <td>0.085</td>
+      <td>0.087</td>
+      <td>0.087</td>
+      <td>0.075</td>
+      <td>0.071</td>
+      <td>0.085</td>
+      <td>0.091</td>
+      <td>0.089</td>
+      <td>0.0819</td>
+      <td>0.075</td>
+      <td>0.074</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Scifact</td>
+      <td>0.691</td>
+      <td>0.681</td>
+      <td>0.686</td>
+      <td>0.693</td>
+      <td>0.7</td>
+      <td>0.672</td>
+      <td>0.65</td>
+      <td>0.706</td>
+      <td>0.728</td>
+      <td>0.728</td>
+      <td>0.671</td>
+      <td>0.628</td>
+      <td>0.623</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Scidocs</td>
+      <td>0.165</td>
+      <td>0.168</td>
+      <td>0.17</td>
+      <td>0.172</td>
+      <td>0.176</td>
+      <td>0.154</td>
+      <td>0.15</td>
+      <td>0.175</td>
+      <td>0.184</td>
+      <td>0.179</td>
+      <td>0.163</td>
+      <td>0.155</td>
+      <td>0.154</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">trec-covid</td>
+      <td>0.688</td>
+      <td>0.729</td>
+      <td>0.732</td>
+      <td>0.74</td>
+      <td>0.718</td>
+      <td>0.514</td>
+      <td>0.486</td>
+      <td>0.744</td>
+      <td>0.752</td>
+      <td>0.665</td>
+      <td>0.542</td>
+      <td>0.501</td>
+      <td>0.503</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Quora</td>
+      <td>0.789</td>
+      <td>0.816</td>
+      <td>0.836</td>
+      <td>0.849</td>
+      <td>0.867</td>
+      <td>0.843</td>
+      <td>0.836</td>
+      <td>0.829</td>
+      <td>0.874</td>
+      <td>0.881</td>
+      <td>0.874</td>
+      <td>0.857</td>
+      <td>0.855</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><strong>Average peformance</strong></td>
+      <td>N/A</td>
+      <td>1.9</td>
+      <td>4.63</td>
+      <td>5.8</td>
+      <td>7.64</td>
+      <td>-3.22</td>
+      <td>-5.94</td>
+      <td>6.51</td>
+      <td>13.98</td>
+      <td>9.88</td>
+      <td>1.83</td>
+      <td>-3.4</td>
+      <td>-3.85</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li>Hofstätter, Sebastian, et al. “Efficiently Teaching an Effective Dense Retriever with Balanced Topic Aware Sampling.” ArXiv.org, 26 May 2021, <a href="https://arxiv.org/abs/2104.06967">https://arxiv.org/abs/2104.06967</a>.</li>
+  <li>Thakur, Nandan, et al. “BEIR: A Heterogenous Benchmark for Zero-Shot Evaluation of Information Retrieval Models.” ArXiv.org, 21 Oct. 2021, <a href="https://arxiv.org/abs/2104.08663">https://arxiv.org/abs/2104.08663</a>.</li>
+  <li>Reddy, Chandan K., et al. “Shopping Queries Dataset: A Large-Scale ESCI Benchmark for Improving Product Search.” ArXiv.org, 14 June 2022, <a href="https://arxiv.org/abs/2206.06588">https://arxiv.org/abs/2206.06588</a>.</li>
+  <li>Alberti, Chris, et al. “Synthetic QA Corpora Generation with Roundtrip Consistency.” ACL Anthology, <a href="https://aclanthology.org/P19-1620/">https://aclanthology.org/P19-1620/</a>.</li>
+  <li>Liang, Davis, et al. “Embedding-Based Zero-Shot Retrieval through Query Generation.” ArXiv.org, 22 Sept. 2020, <a href="https://arxiv.org/abs/2009.10270">https://arxiv.org/abs/2009.10270</a>.</li>
+  <li>Bajaj, Payal, et al. “MS Marco: A Human Generated Machine Reading Comprehension Dataset.” ArXiv.org, 31 Oct. 2018, <a href="https://arxiv.org/abs/1611.09268">https://arxiv.org/abs/1611.09268</a>.</li>
+  <li>Karpukhin, Vladimir, et al. “Dense Passage Retrieval for Open-Domain Question Answering - Arxiv.” ArXiv.org, 30 Sept. 2020, <a href="https://arxiv.org/pdf/2004.04906.pdf">https://arxiv.org/pdf/2004.04906.pdf</a>.</li>
+</ol>
+
+    <hr />
+    <!-- This file was imported from jekyllcodex.org following this guide: https://jekyllcodex.org/without-plugin/share-buttons/. We want to thank jekyllcodex.org for providing this file and guide. -->
+
+
+
+<div class="share-container">Share on: <div id="share-buttons">
+        <div class="facebook" title="Share this on Facebook" onclick="window.open('http://www.facebook.com/share.php?u=https://kolchfa-aws.github.io/project/blog/semantic-science-benchmarks/');"><svg viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1343 12v264h-157q-86 0-116 36t-30 108v189h293l-39 296h-254v759h-306v-759h-255v-296h255v-218q0-186 104-288.5t277-102.5q147 0 228 12z"/></svg></div>
+        <div class="twitter" title="Share this on Twitter" onclick="window.open('http://twitter.com/intent/tweet?url=https://kolchfa-aws.github.io/project/blog/semantic-science-benchmarks/');"><svg viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1684 408q-67 98-162 167 1 14 1 42 0 130-38 259.5t-115.5 248.5-184.5 210.5-258 146-323 54.5q-271 0-496-145 35 4 78 4 225 0 401-138-105-2-188-64.5t-114-159.5q33 5 61 5 43 0 85-11-112-23-185.5-111.5t-73.5-205.5v-4q68 38 146 41-66-44-105-115t-39-154q0-88 44-163 121 149 294.5 238.5t371.5 99.5q-8-38-8-74 0-134 94.5-228.5t228.5-94.5q140 0 236 102 109-21 205-78-37 115-142 178 93-10 186-50z"/></svg></div>
+        <div class="linkedin" title="Share this on Linkedin" onclick="window.open('https://www.linkedin.com/shareArticle?mini=true&url=https://kolchfa-aws.github.io/project/blog/semantic-science-benchmarks/&title=&summary=&source=');"><svg viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M477 625v991h-330v-991h330zm21-306q1 73-50.5 122t-135.5 49h-2q-82 0-132-49t-50-122q0-74 51.5-122.5t134.5-48.5 133 48.5 51 122.5zm1166 729v568h-329v-530q0-105-40.5-164.5t-126.5-59.5q-63 0-105.5 34.5t-63.5 85.5q-11 30-11 81v553h-329q2-399 2-647t-1-296l-1-48h329v144h-2q20-32 41-56t56.5-52 87-43.5 114.5-15.5q171 0 275 113.5t104 332.5z"/></svg></div>
+        <div class="mail" title="Share this through Email" onclick="window.open('mailto:?&body=https://kolchfa-aws.github.io/project/blog/semantic-science-benchmarks/');"><svg viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1792 710v794q0 66-47 113t-113 47h-1472q-66 0-113-47t-47-113v-794q44 49 101 87 362 246 497 345 57 42 92.5 65.5t94.5 48 110 24.5h2q51 0 110-24.5t94.5-48 92.5-65.5q170-123 498-345 57-39 100-87zm0-294q0 79-49 151t-122 123q-376 261-468 325-10 7-42.5 30.5t-54 38-52 32.5-57.5 27-50 9h-2q-23 0-50-9t-57.5-27-52-32.5-54-38-42.5-30.5q-91-64-262-182.5t-205-142.5q-62-42-117-115.5t-55-136.5q0-78 41.5-130t118.5-52h1472q65 0 112.5 47t47.5 113z"/></svg></div>
+    </div>
+</div>
+    <div class="blog-nav">
+
+        
+            <a class="next" href="/blog/slack-workspace/">&laquo; Meet your new OpenSearch Project Slack workspace </a>
+        
+        
+            <a class="prev" href="/blog/Expanding-k-NN-with-Lucene-aNN/">Expanding k-NN with Lucene approximate nearest neighbor search &raquo; </a>
+        
+    
+    </div>
+      
+
+        
+      </div>
+    </div>
+    
+    <!-- END #content-main -->
+    <div id="content-related" class="sidebar">
+     
+<div role="complementary">
+    
+        
+<h2>
+   
+    <a href="/authors/mshyani/">
+  
+  Milind Shyani 
+   
+  </a>
+  
+</h2>
+
+
+ <img class="author-photo" src="/assets/media/authors/mshyani.jpg" alt="photo of Milind Shyani" /> 
+
+<p><p><strong>Milind Shyani</strong> is an applied scientist at Amazon Web Services working on machine learning algorithms and large language models.</p>
+</p>
+
+<div class="author-social-media">
+  <ul>
+
+
+
+    <li><a target="_blank" href="https://www.linkedin.com/in/milind-shyani"><i class="icon icon-linkedin-square"></i> Milind Shyani</a></li>
+
+
+  </ul>
+</div>
+        
+<h2>
+   
+    <a href="/authors/dhrubo/">
+  
+  Dhrubo Saha 
+   
+  </a>
+  
+</h2>
+
+
+ <img class="author-photo" src="/assets/media/authors/dhrubo.jpg" alt="photo of Dhrubo Saha" /> 
+
+<p><p><strong>Dhrubo Saha</strong> is a machine learning engineer at Amazon Web Services (AWS) interested in machine learning algorithms, large language models, and distributed systems.</p>
+</p>
+
+<div class="author-social-media">
+  <ul>
+
+
+    <li><a target="_blank" href="https://github.com/dhrubo-os"><i class="icon icon-github-square"></i> dhrubo-os</a></li>
+
+
+    <li><a target="_blank" href="https://www.linkedin.com/in/thedhrubo"><i class="icon icon-linkedin-square"></i> Dhrubo Saha</a></li>
+
+
+  </ul>
+</div>
+        
+<h2>
+   
+    <a href="/authors/nmishra/">
+  
+  Nina Mishra 
+   
+  </a>
+  
+</h2>
+
+
+ <img class="author-photo" src="/assets/media/authors/nmishra.jpg" alt="photo of Nina Mishra" /> 
+
+<p><p><strong>Nina Mishra</strong> is a scientist at Amazon interested in machine learning algorithms and healthcare.</p>
+</p>
+
+<div class="author-social-media">
+  <ul>
+
+
+
+
+  </ul>
+</div>
+        
+<h2>
+   
+    <a href="/authors/kolchfa/">
+  
+  Fanit Kolchina 
+   
+  </a>
+  
+</h2>
+
+
+ <img class="author-photo" src="/assets/media/authors/kolchfa.jpg" alt="photo of Fanit Kolchina" /> 
+
+<p><p><strong>Fanit Kolchina</strong> is a technical writer at AWS focusing on OpenSearch.</p>
+</p>
+
+<div class="author-social-media">
+  <ul>
+
+
+    <li><a target="_blank" href="https://github.com/kolchfa-aws"><i class="icon icon-github-square"></i> kolchfa-aws</a></li>
+
+
+
+  </ul>
+</div>
+</div>
+
+    </div>
+    <!-- END #content-related -->
+  </div>
+  <!-- END #subwrap -->
+  <div id="content-extra" class="sidebar">
+  
+  </div>
+  <!-- END #content-extra -->
+</div>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+    
+<div role="contentinfo" class="bottom-contentinfo--wrapper">
+  <div class="bottom-contentinfo--subfooter">
+    <div class="bottom-contentinfo--container">
+      <h1 class="visuallyhidden">OpenSearch Links</h1>
+      <div class="subfooter--flex-wrapper">
+        <div class="subfooter--columns-wrapper">
+          
+            <div class="subfooter--columns-wrapper--column">
+              <h4>Get Involved</h4>
+              <ul>
+              
+                <li><a href="/codeofconduct.html">Code of Conduct</a></li>
+              
+                <li><a href="https://forum.opensearch.org/">Forum</a></li>
+              
+                <li><a href="https://github.com/opensearch-project">Github</a></li>
+              
+                <li><a href="/slack.html">Slack</a></li>
+              
+              </ul>
+            </div>
+          
+            <div class="subfooter--columns-wrapper--column">
+              <h4>Resources</h4>
+              <ul>
+              
+                <li><a href="/about.html">About</a></li>
+              
+                <li><a href="/releases.html">Release Schedule</a></li>
+              
+                <li><a href="/releases.html#maintenance-policy">Maintenance Policy</a></li>
+              
+                <li><a href="/faq/">FAQ</a></li>
+              
+                <li><a href="/testimonials/">Testimonials</a></li>
+              
+                <li><a href="/trademark-brand-policy.html">Trademark and Brand Policy</a></li>
+              
+                <li><a href="https://aws.amazon.com/privacy/">Privacy</a></li>
+              
+              </ul>
+            </div>
+          
+            <div class="subfooter--columns-wrapper--column">
+              <h4>Contact Us</h4>
+              <ul>
+              
+                <li><a href="/connect.html">Connect</a></li>
+              
+                <li><a href="https://twitter.com/OpenSearchProj">Twitter</a></li>
+              
+                <li><a href="https://www.linkedin.com/company/opensearch-project/">LinkedIn</a></li>
+              
+                <li><a href="https://www.youtube.com/c/OpenSearchProject">YouTube</a></li>
+              
+                <li><a href="https://www.meetup.com/pro/opensearchproject/">Meetup</a></li>
+              
+                <li><a href="https://www.facebook.com/OpenSearchProject/">Facebook</a></li>
+              
+              </ul>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-contentinfo--footer">
+    <div class="bottom-contentinfo--container">
+      <div class="footer--flex-wrapper">
+        <div class="footer--legal-rows-wrapper">
+          <div class="footer--legal-rows-wrapper--row">
+            <div class="footer--legal-rows-wrapper--row--logo__mobile">
+              
+        <svg width="338" height="90" viewBox="0 0 338 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M48.9584 20.9791C47.9675 20.9791 47.1642 21.7811 47.1642 22.7704C47.1642 37.5102 35.1949 49.4592 20.43 49.4592C19.4391 49.4592 18.6358 50.2611 18.6358 51.2504C18.6358 52.2397 19.4391 53.0416 20.43 53.0416C37.1767 53.0416 50.7527 39.4887 50.7527 22.7704C50.7527 21.7811 49.9494 20.9791 48.9584 20.9791Z" fill="black"/>
+            <path d="M38.1291 32.4583C39.8545 29.6483 41.5232 25.9016 41.1949 20.6562C40.5148 9.79078 30.6569 1.548 21.3483 2.44129C17.7042 2.791 13.9624 5.75637 14.2948 11.0679C14.4393 13.3761 15.5709 14.7384 17.4101 15.7858C19.1606 16.7827 21.4095 17.4142 23.9591 18.13C27.0386 18.9948 30.6109 19.9661 33.3565 21.9859C36.647 24.4068 38.8965 27.213 38.1291 32.4583Z" fill="black"/>
+            <path d="M3.1075 13.4584C1.38203 16.2684 -0.286678 20.0151 0.0416276 25.2605C0.721697 36.1259 10.5796 44.3687 19.8882 43.4754C23.5324 43.1257 27.2742 40.1603 26.9417 34.8488C26.7973 32.5406 25.6656 31.1783 23.8265 30.131C22.076 29.134 19.827 28.5025 17.2775 27.7867C14.1979 26.9219 10.6256 25.9506 7.88011 23.9308C4.58953 21.5099 2.34011 18.7037 3.1075 13.4584Z" fill="black"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M287.466 24.5417V42.75H294.603V22.9584C294.603 19.3109 293.89 16.5555 292.462 14.6863C291.033 12.7991 288.88 11.875 286.079 11.875C283.04 11.875 280.604 13.649 279.14 16.625H278.743C278.851 15.0885 278.949 14.2082 279.021 13.5655C279.095 12.9026 279.14 12.4923 279.14 11.875V0.395874H272.003V42.75H279.536V28.1042C279.536 24.8197 279.647 22.3896 280.324 20.6475C281.001 18.8872 282.182 18.0071 283.866 18.0071C286.118 18.0071 287.466 20.0958 287.466 24.5417ZM183.861 40.5563C185.79 38.5659 186.754 35.6991 186.754 31.9559C186.754 29.6186 186.226 27.537 185.169 25.711C184.13 23.885 182.285 22.0956 179.634 20.3426C177.668 19.0645 176.286 17.9232 175.489 16.919C174.71 15.9147 174.32 14.7369 174.32 13.3857C174.32 12.0162 174.645 10.9389 175.294 10.1537C175.962 9.35026 176.907 8.94857 178.132 8.94857C179.244 8.94857 180.282 9.14941 181.247 9.5511C182.229 9.95287 183.166 10.4093 184.056 10.9206L186.559 4.94967C183.685 3.23325 180.691 2.37504 177.575 2.37504C174.311 2.37504 171.706 3.37933 169.759 5.3879C167.83 7.39648 166.866 10.1172 166.866 13.55C166.866 15.3395 167.107 16.9098 167.589 18.261C168.09 19.6122 168.785 20.8357 169.676 21.9313C170.584 23.0086 171.91 24.1407 173.653 25.3276C175.656 26.6788 177.093 27.9114 177.964 29.0252C178.836 30.1207 179.272 31.3351 179.272 32.668C179.272 34.0192 178.901 35.0874 178.159 35.8726C177.436 36.6578 176.351 37.0504 174.905 37.0504C172.364 37.0504 169.573 36.0734 166.532 34.1197V41.4875C169.017 42.857 172.03 43.5417 175.573 43.5417C179.188 43.5417 181.952 42.5466 183.861 40.5563ZM191.65 39.484C193.875 42.1891 196.909 43.5417 200.752 43.5417C204.044 43.5417 206.866 42.838 209.22 41.4306V35.4263C206.72 36.9067 204.274 37.647 201.883 37.647C200.008 37.647 198.537 36.989 197.47 35.673C196.403 34.3387 195.929 32.4109 195.874 29.6875H210.544V25.6932C210.544 21.3248 209.579 17.9342 207.648 15.5215C205.717 13.0906 203.079 11.875 199.732 11.875C196.146 11.875 193.351 13.2916 191.346 16.1247C189.342 18.9578 188.34 22.8967 188.34 27.9414C188.34 32.913 189.443 36.7605 191.65 39.484ZM197.084 19.168C197.764 18.053 198.629 17.4956 199.677 17.4956C200.798 17.4956 201.681 18.0713 202.325 19.2228C202.968 20.3743 203.371 22.3118 203.407 24.5417H195.874C195.984 22.2204 196.403 20.2646 197.084 19.168ZM228.387 42.75L227.198 38.7917H226.801C225.708 40.5798 224.656 41.8539 223.489 42.529C222.322 43.2041 220.849 43.5417 219.071 43.5417C216.792 43.5417 214.995 42.7024 213.679 41.0237C212.383 39.345 211.734 37.0095 211.734 34.0171C211.734 30.8057 212.623 28.4245 214.402 26.8736C216.199 25.3044 218.876 24.4377 222.433 24.2735L226.546 24.1093V21.9197C226.546 19.0733 225.295 17.65 222.794 17.65C220.942 17.65 218.811 18.3616 216.402 19.7849L213.846 14.7489C216.922 12.833 220.214 11.875 223.827 11.875C227.106 11.875 229.65 12.8056 231.354 14.6668C233.077 16.5096 233.938 19.128 233.938 22.5218V42.75H228.387ZM222.099 37.8488C223.452 37.8488 224.527 37.2558 225.323 36.0698C226.138 34.8655 226.546 33.269 226.546 31.2801V28.7074L224.267 28.8169C222.581 28.9081 221.34 29.3825 220.543 30.24C219.765 31.0977 219.376 32.3749 219.376 34.0718C219.376 36.5898 220.284 37.8488 222.099 37.8488ZM252.177 12.4688C251.329 12.1957 250.066 11.875 249.181 11.875C247.936 11.875 246.843 12.2846 245.904 13.1039C244.965 13.9232 244.249 14.7134 243.454 16.625H243.058L241.868 12.6667H236.317V42.75H243.821V26.9167C243.821 24.2586 243.99 22.5438 244.929 21.1601C245.868 19.7582 247.213 19.0573 248.964 19.0573C249.777 19.0573 250.483 19.2138 250.988 19.3959L252.177 12.4688ZM263.28 43.5417C259.666 43.5417 256.899 42.3368 255.011 39.6864C253.122 37.0361 252.177 33.1429 252.177 28.0068C252.177 22.6331 253.067 18.6211 254.847 15.9707C256.645 13.3204 259.328 11.875 263.069 11.875C264.195 11.875 265.462 12.1597 266.697 12.4887C267.931 12.8178 269.436 13.2327 270.417 13.8542L267.95 19.5898C266.443 18.6941 265.107 18.2464 263.946 18.2464C262.402 18.2464 261.285 19.0597 260.594 20.6864C259.923 22.295 259.587 24.7167 259.587 27.952C259.587 31.114 259.923 33.481 260.594 35.053C261.267 36.6066 262.365 37.3834 263.891 37.3834C265.707 37.3834 267.605 36.7437 269.584 35.4643V41.8798C267.678 43.0679 265.586 43.5417 263.28 43.5417Z" fill="black"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M85.4683 38.2078C87.9655 34.6519 89.2137 29.5642 89.2137 22.9446C89.2137 16.3252 87.9742 11.2466 85.4961 7.70889C83.0171 4.15296 79.4549 2.375 74.8101 2.375C70.1099 2.375 66.5113 4.14384 64.0143 7.68153C61.5173 11.201 60.2688 16.2705 60.2688 22.8899C60.2688 29.5642 61.5173 34.6792 64.0143 38.2351C66.5113 41.7729 70.0915 43.5417 74.7551 43.5417C79.4002 43.5417 82.9711 41.7637 85.4683 38.2078ZM69.66 33.3662C68.5034 30.9774 67.925 27.5035 67.925 22.9446C67.925 18.3675 68.5034 14.8937 69.66 12.5231C70.8167 10.1342 72.5334 8.93982 74.8101 8.93982C79.29 8.93982 81.5302 13.608 81.5302 22.9446C81.5302 32.2812 79.2717 36.9495 74.7551 36.9495C72.5151 36.9495 70.8167 35.7551 69.66 33.3662ZM101.653 42.7483C102.67 43.3348 103.765 43.5417 105.074 43.5417C107.873 43.5417 110.149 42.2168 111.767 39.3943C113.385 36.5718 114.194 32.6772 114.194 27.7103C114.194 22.6701 113.412 18.7755 111.849 16.0263C110.286 13.2588 108.123 11.875 105.36 11.875C102.489 11.875 100.238 13.5825 98.7298 16.625H98.3333L97.1438 12.6667H91.5927V56.6042H98.7298V43.5417C98.7298 43.0285 98.6244 41.2842 98.3333 38.7917H98.7298C99.3246 40.5729 100.653 42.1435 101.653 42.7483ZM99.8258 20.095C100.463 18.7571 101.489 18.0882 102.907 18.0882C104.233 18.0882 105.206 18.8763 105.824 20.4525C106.46 22.0287 106.778 24.4113 106.778 27.6004C106.778 34.0884 105.506 37.3324 102.961 37.3324C101.489 37.3324 100.435 36.5627 99.7988 35.0231C99.1628 33.4835 98.8448 31.0276 98.8448 27.6553V26.6931C98.8813 23.614 99.208 21.4147 99.8258 20.095ZM128.192 43.5417C124.349 43.5417 121.315 42.1891 119.09 39.484C116.883 36.7605 115.78 32.913 115.78 27.9414C115.78 22.8967 116.782 18.9577 118.786 16.1247C120.791 13.2915 123.585 11.875 127.171 11.875C130.518 11.875 133.157 13.0905 135.088 15.5215C137.019 17.9342 137.984 21.3247 137.984 25.6931V29.6875H123.313C123.369 32.4109 123.843 34.3387 124.91 35.673C125.976 36.989 127.447 37.647 129.323 37.647C131.714 37.647 134.159 36.9067 136.66 35.4262V41.4305C134.306 42.838 131.484 43.5417 128.192 43.5417ZM127.116 17.4955C126.068 17.4955 125.204 18.053 124.523 19.1679C123.843 20.2646 123.423 22.2203 123.313 24.5417H130.847C130.81 22.3118 130.407 20.3743 129.764 19.2228C129.12 18.0712 128.238 17.4955 127.116 17.4955ZM155.827 24.5417V42.75H162.964V23.116C162.964 19.4425 162.268 16.6506 160.877 14.7404C159.504 12.8301 157.425 11.875 154.643 11.875C152.996 11.875 151.558 12.2791 150.331 13.0873C149.105 13.877 148.159 15.2107 147.5 16.625H147.104L146.112 12.6667H140.363V42.75H147.897V28.3021C147.897 24.5735 148.034 22.0322 148.766 20.4711C149.498 18.8914 150.651 18.1016 152.226 18.1016C153.417 18.1016 154.277 18.671 154.808 19.8098C155.339 20.9486 155.827 22.3192 155.827 24.5417Z" fill="black"/>
+            <path d="M91 71H96.2647C98.5481 71 100.271 71.3488 101.433 72.0463C102.594 72.7439 103.175 73.9476 103.175 75.6575C103.175 76.3721 103.054 77.0186 102.812 77.597C102.578 78.167 102.235 78.6391 101.784 79.0134C101.332 79.3792 100.775 79.6259 100.113 79.7535V79.8811C100.799 80.0087 101.408 80.2342 101.941 80.5574C102.481 80.8807 102.905 81.3443 103.212 81.9483C103.526 82.5523 103.684 83.3349 103.684 84.2962C103.684 85.4361 103.425 86.4059 102.909 87.2055C102.401 88.0051 101.671 88.6134 100.718 89.0302C99.7745 89.4471 98.653 89.6555 97.3539 89.6555H91V71ZM93.9047 78.6944H96.6883C98.0034 78.6944 98.9152 78.469 99.4235 78.0181C99.9318 77.5673 100.186 76.908 100.186 76.0403C100.186 75.1556 99.8834 74.5176 99.2783 74.1263C98.6812 73.7349 97.7291 73.5393 96.422 73.5393H93.9047V78.6944ZM93.9047 81.1699V87.0907H96.9666C98.3221 87.0907 99.2742 86.8142 99.8229 86.2612C100.372 85.7083 100.646 84.9597 100.646 84.0154C100.646 83.437 100.521 82.9351 100.271 82.5097C100.029 82.0844 99.6292 81.7569 99.0725 81.5272C98.5158 81.289 97.7654 81.1699 96.8214 81.1699H93.9047Z" fill="black"/>
+            <path d="M128.008 71V83.0712C128.008 84.3727 127.745 85.5382 127.221 86.5675C126.704 87.5968 125.922 88.4135 124.873 89.0175C123.824 89.6129 122.505 89.9107 120.915 89.9107C118.648 89.9107 116.921 89.2854 115.735 88.0349C114.557 86.7759 113.968 85.1043 113.968 83.0201V71H116.873V82.7522C116.873 84.3089 117.22 85.4574 117.914 86.1974C118.608 86.9375 119.645 87.3076 121.024 87.3076C121.976 87.3076 122.751 87.1332 123.348 86.7844C123.953 86.4271 124.397 85.9082 124.679 85.2277C124.97 84.5386 125.115 83.7092 125.115 82.7394V71H128.008Z" fill="black"/>
+            <path d="M140.961 89.6555V71H143.866V89.6555H140.961Z" fill="black"/>
+            <path d="M156.965 89.6555V71H159.87V87.0524H167.385V89.6555H156.965Z" fill="black"/>
+            <path d="M190.762 80.1491C190.762 82.2503 190.391 84.0069 189.649 85.4191C188.906 86.8227 187.829 87.8818 186.417 88.5964C185.005 89.3024 183.303 89.6555 181.31 89.6555H176.396V71H181.842C183.674 71 185.255 71.3488 186.587 72.0463C187.918 72.7354 188.947 73.7605 189.673 75.1216C190.399 76.4741 190.762 78.15 190.762 80.1491ZM187.736 80.2384C187.736 78.7072 187.506 77.4482 187.047 76.4614C186.595 75.4746 185.925 74.743 185.037 74.2666C184.158 73.7817 183.073 73.5393 181.782 73.5393H179.301V87.0907H181.358C183.496 87.0907 185.094 86.5165 186.151 85.368C187.208 84.2196 187.736 82.5097 187.736 80.2384Z" fill="black"/>
+            <path d="M214.139 89.6555H211.258V71H221.255V73.5776H214.139V79.3962H220.795V81.961H214.139V89.6555Z" fill="black"/>
+            <path d="M237.876 71C239.401 71 240.659 71.1957 241.652 71.587C242.652 71.9783 243.395 72.5738 243.879 73.3734C244.371 74.173 244.617 75.1896 244.617 76.4231C244.617 77.3418 244.456 78.1245 244.133 78.771C243.81 79.4175 243.387 79.9534 242.862 80.3788C242.338 80.8041 241.777 81.1444 241.18 81.3996L246.202 89.6555H242.923L238.65 82.178H235.806V89.6555H232.902V71H237.876ZM237.682 73.552H235.806V79.6514H237.815C239.163 79.6514 240.139 79.3877 240.744 78.8603C241.357 78.3329 241.664 77.5545 241.664 76.5252C241.664 75.4448 241.337 74.6792 240.684 74.2283C240.038 73.7775 239.038 73.552 237.682 73.552Z" fill="black"/>
+            <path d="M266.354 89.6555H256.333V71H266.354V73.5776H259.238V78.6434H265.906V81.2082H259.238V87.0651H266.354V89.6555Z" fill="black"/>
+            <path d="M288.627 89.6555H278.606V71H288.627V73.5776H281.511V78.6434H288.179V81.2082H281.511V87.0651H288.627V89.6555Z" fill="black"/>
+            <path d="M300.879 89.6555V71H303.784V87.0524H311.299V89.6555H300.879Z" fill="black"/>
+            <path d="M325.321 79.5111L329.52 71H332.655L326.773 82.4077V89.6555H323.88V82.5225L317.986 71H321.145L325.321 79.5111Z" fill="black"/>
+            <path d="M334.442 88.0732C334.442 87.3756 334.611 86.8865 334.95 86.6058C335.297 86.3165 335.717 86.1719 336.209 86.1719C336.701 86.1719 337.121 86.3165 337.467 86.6058C337.822 86.8865 338 87.3756 338 88.0732C338 88.7537 337.822 89.2471 337.467 89.5534C337.121 89.8511 336.701 90 336.209 90C335.717 90 335.297 89.8511 334.95 89.5534C334.611 89.2471 334.442 88.7537 334.442 88.0732Z" fill="black"/>
+        </svg>
+    
+
+            </div>
+            <div class="footer--legal-rows-wrapper--row--logo__desktop">
+              
+        <svg width="523" height="39" viewBox="0 0 523 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M33.1921 14.2473C32.5203 14.2473 31.9757 14.7919 31.9757 15.4638C31.9757 25.4739 23.861 33.5886 13.8509 33.5886C13.179 33.5886 12.6344 34.1332 12.6344 34.8051C12.6344 35.4769 13.179 36.0215 13.8509 36.0215C25.2046 36.0215 34.4086 26.8175 34.4086 15.4638C34.4086 14.7919 33.864 14.2473 33.1921 14.2473Z" fill="#E1F0F9"/>
+            <path d="M25.8502 22.043C27.02 20.1347 28.1514 17.5902 27.9288 14.028C27.4677 6.6491 20.7844 1.05129 14.4735 1.65793C12.0029 1.89543 9.46604 3.90926 9.69142 7.51641C9.78938 9.08394 10.5566 10.0091 11.8035 10.7204C12.9902 11.3974 14.515 11.8263 16.2435 12.3124C18.3313 12.8997 20.7532 13.5593 22.6146 14.931C24.8455 16.5751 26.3705 18.4808 25.8502 22.043Z" fill="#E1F0F9"/>
+            <path d="M2.10678 9.13977C0.936968 11.0481 -0.194358 13.5926 0.0282221 17.1548C0.489286 24.5337 7.17263 30.1315 13.4835 29.5249C15.9541 29.2874 18.491 27.2735 18.2656 23.6664C18.1676 22.0989 17.4004 21.1737 16.1535 20.4624C14.9668 19.7854 13.442 19.3565 11.7135 18.8704C9.6257 18.2831 7.20382 17.6235 5.34245 16.2518C3.11154 14.6077 1.58652 12.702 2.10678 9.13977Z" fill="#E1F0F9"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M194.892 16.6666V29.0322H199.731V15.5914C199.731 13.1143 199.247 11.243 198.279 9.97369C197.311 8.69202 195.851 8.0645 193.952 8.0645C191.891 8.0645 190.24 9.26923 189.247 11.2903H188.978C189.052 10.2468 189.118 9.64901 189.167 9.21251C189.217 8.76235 189.247 8.48369 189.247 8.0645V0.268799H184.409V29.0322H189.516V19.086C189.516 16.8554 189.591 15.2051 190.05 14.022C190.509 12.8266 191.31 12.2289 192.452 12.2289C193.978 12.2289 194.892 13.6473 194.892 16.6666ZM124.652 27.5424C125.959 26.1907 126.613 24.2439 126.613 21.7018C126.613 20.1144 126.255 18.7008 125.538 17.4607C124.834 16.2207 123.583 15.0055 121.785 13.815C120.453 12.947 119.516 12.1719 118.975 11.4899C118.447 10.8079 118.183 10.008 118.183 9.09041C118.183 8.16036 118.403 7.42874 118.844 6.89552C119.296 6.34987 119.937 6.07708 120.767 6.07708C121.522 6.07708 122.225 6.21348 122.879 6.48627C123.545 6.75912 124.18 7.06912 124.784 7.41633L126.481 3.36136C124.532 2.19571 122.502 1.61288 120.39 1.61288C118.177 1.61288 116.411 2.29491 115.091 3.65897C113.783 5.02303 113.13 6.87073 113.13 9.20202C113.13 10.4172 113.293 11.4837 113.62 12.4013C113.959 13.319 114.431 14.1498 115.034 14.8939C115.65 15.6255 116.549 16.3943 117.731 17.2004C119.089 18.118 120.063 18.955 120.654 19.7114C121.245 20.4555 121.54 21.2801 121.54 22.1854C121.54 23.103 121.289 23.8284 120.786 24.3616C120.296 24.8949 119.56 25.1615 118.58 25.1615C116.857 25.1615 114.965 24.498 112.903 23.1712V28.1748C114.588 29.1049 116.631 29.5699 119.032 29.5699C121.483 29.5699 123.357 28.8941 124.652 27.5424ZM129.932 26.8142C131.441 28.6513 133.498 29.5699 136.103 29.5699C138.335 29.5699 140.248 29.092 141.844 28.1362V24.0585C140.149 25.064 138.491 25.5667 136.87 25.5667C135.598 25.5667 134.601 25.1198 133.878 24.2261C133.155 23.32 132.833 22.0108 132.796 20.1613H142.742V17.4486C142.742 14.482 142.088 12.1794 140.778 10.5409C139.469 8.88998 137.681 8.0645 135.411 8.0645C132.98 8.0645 131.085 9.02649 129.726 10.9505C128.368 12.8745 127.688 15.5495 127.688 18.9755C127.688 22.3518 128.436 24.9647 129.932 26.8142ZM133.616 13.0172C134.077 12.2601 134.663 11.8815 135.374 11.8815C136.134 11.8815 136.733 12.2725 137.169 13.0545C137.605 13.8365 137.878 15.1523 137.903 16.6666H132.796C132.87 15.0902 133.155 13.762 133.616 13.0172ZM154.839 29.0322L154.032 26.3441H153.763C153.023 27.5584 152.309 28.4236 151.518 28.8821C150.727 29.3406 149.728 29.5699 148.523 29.5699C146.977 29.5699 145.759 28.9999 144.867 27.8599C143.988 26.7198 143.548 25.1337 143.548 23.1015C143.548 20.9206 144.151 19.3035 145.357 18.2502C146.575 17.1846 148.39 16.596 150.802 16.4845L153.59 16.373V14.886C153.59 12.9529 152.742 11.9864 151.047 11.9864C149.791 11.9864 148.346 12.4697 146.713 13.4362L144.98 10.0162C147.066 8.71504 149.298 8.0645 151.747 8.0645C153.97 8.0645 155.695 8.69649 156.85 9.96041C158.018 11.2119 158.602 12.9901 158.602 15.2949V29.0322H154.839ZM150.576 25.7037C151.493 25.7037 152.221 25.301 152.761 24.4956C153.314 23.6777 153.59 22.5935 153.59 21.2428V19.4956L152.046 19.57C150.903 19.6319 150.061 19.9541 149.521 20.5365C148.994 21.1189 148.73 21.9863 148.73 23.1387C148.73 24.8487 149.345 25.7037 150.576 25.7037ZM170.968 8.46772C170.392 8.28224 169.536 8.0645 168.937 8.0645C168.092 8.0645 167.351 8.34267 166.715 8.89907C166.078 9.45546 165.592 9.99208 165.054 11.2903H164.785L163.978 8.60213H160.215V29.0322H165.303V18.2796C165.303 16.4744 165.417 15.3098 166.054 14.3701C166.69 13.4181 167.602 12.9421 168.789 12.9421C169.34 12.9421 169.819 13.0484 170.161 13.172L170.968 8.46772ZM178.495 29.5699C176.045 29.5699 174.169 28.7516 172.889 26.9517C171.608 25.1518 170.968 22.5079 170.968 19.0199C170.968 15.3705 171.571 12.6458 172.777 10.8459C173.997 9.04606 175.816 8.0645 178.352 8.0645C179.115 8.0645 179.974 8.25783 180.811 8.48127C181.648 8.70471 182.668 8.98654 183.333 9.40858L181.661 13.3037C180.639 12.6955 179.734 12.3914 178.946 12.3914C177.899 12.3914 177.142 12.9437 176.674 14.0485C176.219 15.1408 175.991 16.7855 175.991 18.9826C175.991 21.13 176.219 22.7375 176.674 23.805C177.13 24.8601 177.875 25.3877 178.909 25.3877C180.14 25.3877 181.427 24.9532 182.769 24.0843V28.4413C181.476 29.2481 180.058 29.5699 178.495 29.5699Z" fill="#E1F0F9"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M57.9446 25.9476C59.6376 23.5327 60.4839 20.0775 60.4839 15.5821C60.4839 11.0867 59.6436 7.63775 57.9635 5.23525C56.2828 2.82036 53.8678 1.61292 50.7187 1.61292C47.5322 1.61292 45.0924 2.81417 43.3995 5.21667C41.7067 7.60679 40.8602 11.0496 40.8602 15.545C40.8602 20.0775 41.7067 23.5513 43.3995 25.9661C45.0924 28.3687 47.5197 29.5699 50.6814 29.5699C53.8307 29.5699 56.2516 28.3625 57.9446 25.9476ZM47.2272 22.6596C46.443 21.0373 46.0509 18.6781 46.0509 15.5821C46.0509 12.4737 46.443 10.1146 47.2272 8.50464C48.0114 6.88232 49.1752 6.0712 50.7187 6.0712C53.7559 6.0712 55.2747 9.24146 55.2747 15.5821C55.2747 21.9228 53.7435 25.0931 50.6814 25.0931C49.1628 25.0931 48.0114 24.2819 47.2272 22.6596ZM68.9172 29.0311C69.607 29.4294 70.3495 29.5699 71.2366 29.5699C73.1344 29.5699 74.6774 28.6702 75.7742 26.7533C76.871 24.8366 77.4194 22.1916 77.4194 18.8186C77.4194 15.3957 76.8893 12.7508 75.8296 10.8837C74.7699 9.00426 73.3038 8.06453 71.4307 8.06453C69.4839 8.06453 67.9581 9.22415 66.9355 11.2903H66.6667L65.8602 8.60216H62.0968V38.4409H66.9355V29.5699C66.9355 29.2214 66.864 28.0368 66.6667 26.3441H66.9355C67.3387 27.5538 68.2393 28.6204 68.9172 29.0311ZM67.6785 13.6469C68.1102 12.7383 68.8059 12.284 69.7672 12.284C70.6667 12.284 71.3258 12.8192 71.7452 13.8896C72.1764 14.9601 72.392 16.5781 72.392 18.7439C72.392 23.15 71.5296 25.3531 69.8043 25.3531C68.8059 25.3531 68.0914 24.8303 67.6602 23.7848C67.229 22.7393 67.0135 21.0714 67.0135 18.7812V18.1278C67.0382 16.0367 67.2597 14.5431 67.6785 13.6469ZM86.9097 29.5699C84.3043 29.5699 82.2473 28.6514 80.7387 26.8143C79.2425 24.9647 78.4946 22.3518 78.4946 18.9755C78.4946 15.5495 79.1742 12.8745 80.5328 10.9506C81.892 9.02652 83.7866 8.06453 86.2178 8.06453C88.4871 8.06453 90.2758 8.89001 91.585 10.5409C92.8941 12.1794 93.5484 14.482 93.5484 17.4487V20.1613H83.6022C83.6398 22.0108 83.9613 23.32 84.6844 24.2261C85.4075 25.1199 86.4049 25.5667 87.6764 25.5667C89.2973 25.5667 90.9554 25.064 92.6506 24.0586V28.1362C91.0549 29.092 89.1414 29.5699 86.9097 29.5699ZM86.1807 11.8815C85.4699 11.8815 84.8839 12.2601 84.4226 13.0173C83.9613 13.7621 83.6769 15.0902 83.6022 16.6667H88.7097C88.685 15.1523 88.4118 13.8365 87.9758 13.0545C87.5393 12.2725 86.9409 11.8815 86.1807 11.8815ZM105.645 16.6667V29.0323H110.484V15.6985C110.484 13.2037 110.012 11.3077 109.069 10.0104C108.138 8.71318 106.729 8.06453 104.842 8.06453C103.726 8.06453 102.751 8.33894 101.919 8.88781C101.088 9.42415 100.447 10.3299 100 11.2903H99.7312L99.0592 8.60216H95.1613V29.0323H100.269V19.2204C100.269 16.6883 100.362 14.9625 100.859 13.9023C101.355 12.8295 102.137 12.2931 103.204 12.2931C104.011 12.2931 104.595 12.6798 104.954 13.4532C105.315 14.2266 105.645 15.1574 105.645 16.6667Z" fill="#E1F0F9"/>
+            <path d="M223.812 7.58398H230.185C232.948 7.58398 235.033 7.98438 236.439 8.78516C237.846 9.58594 238.549 10.9678 238.549 12.9307C238.549 13.751 238.402 14.4932 238.109 15.1572C237.826 15.8115 237.411 16.3535 236.864 16.7832C236.317 17.2031 235.644 17.4863 234.843 17.6328V17.7793C235.673 17.9258 236.41 18.1846 237.055 18.5557C237.709 18.9268 238.222 19.459 238.593 20.1523C238.974 20.8457 239.164 21.7441 239.164 22.8477C239.164 24.1562 238.852 25.2695 238.227 26.1875C237.611 27.1055 236.728 27.8037 235.575 28.2822C234.433 28.7607 233.075 29 231.503 29H223.812V7.58398ZM227.328 16.417H230.697C232.289 16.417 233.393 16.1582 234.008 15.6406C234.623 15.123 234.931 14.3662 234.931 13.3701C234.931 12.3545 234.564 11.6221 233.832 11.1729C233.109 10.7236 231.957 10.499 230.375 10.499H227.328V16.417ZM227.328 19.2588V26.0557H231.034C232.675 26.0557 233.827 25.7383 234.491 25.1035C235.155 24.4688 235.487 23.6094 235.487 22.5254C235.487 21.8613 235.336 21.2852 235.033 20.7969C234.74 20.3086 234.257 19.9326 233.583 19.6689C232.909 19.3955 232.001 19.2588 230.858 19.2588H227.328Z" fill="#E1F0F9"/>
+            <path d="M268.604 7.58398V21.4414C268.604 22.9355 268.287 24.2734 267.652 25.4551C267.027 26.6367 266.08 27.5742 264.81 28.2676C263.541 28.9512 261.944 29.293 260.02 29.293C257.276 29.293 255.186 28.5752 253.751 27.1396C252.325 25.6943 251.612 23.7754 251.612 21.3828V7.58398H255.128V21.0752C255.128 22.8623 255.548 24.1807 256.388 25.0303C257.227 25.8799 258.482 26.3047 260.152 26.3047C261.304 26.3047 262.242 26.1045 262.965 25.7041C263.697 25.2939 264.234 24.6982 264.576 23.917C264.928 23.126 265.103 22.1738 265.103 21.0605V7.58398H268.604Z" fill="#E1F0F9"/>
+            <path d="M284.283 29V7.58398H287.798V29H284.283Z" fill="#E1F0F9"/>
+            <path d="M303.653 29V7.58398H307.168V26.0117H316.265V29H303.653Z" fill="#E1F0F9"/>
+            <path d="M344.559 18.0869C344.559 20.499 344.11 22.5156 343.211 24.1367C342.313 25.748 341.009 26.9639 339.3 27.7842C337.591 28.5947 335.53 29 333.118 29H327.171V7.58398H333.763C335.98 7.58398 337.894 7.98438 339.505 8.78516C341.116 9.57617 342.362 10.7529 343.24 12.3154C344.119 13.8682 344.559 15.792 344.559 18.0869ZM340.897 18.1895C340.897 16.4316 340.618 14.9863 340.062 13.8535C339.515 12.7207 338.704 11.8809 337.63 11.334C336.566 10.7773 335.252 10.499 333.69 10.499H330.687V26.0557H333.177C335.765 26.0557 337.698 25.3965 338.978 24.0781C340.257 22.7598 340.897 20.7969 340.897 18.1895Z" fill="#E1F0F9"/>
+            <path d="M372.852 29H369.366V7.58398H381.466V10.543H372.852V17.2227H380.909V20.167H372.852V29Z" fill="#E1F0F9"/>
+            <path d="M401.583 7.58398C403.428 7.58398 404.952 7.80859 406.153 8.25781C407.364 8.70703 408.262 9.39062 408.848 10.3086C409.444 11.2266 409.742 12.3936 409.742 13.8096C409.742 14.8643 409.546 15.7627 409.156 16.5049C408.765 17.2471 408.253 17.8623 407.618 18.3506C406.983 18.8389 406.304 19.2295 405.582 19.5225L411.661 29H407.691L402.52 20.416H399.078V29H395.562V7.58398H401.583ZM401.348 10.5137H399.078V17.5156H401.509C403.14 17.5156 404.322 17.2129 405.054 16.6074C405.796 16.002 406.168 15.1084 406.168 13.9268C406.168 12.6865 405.772 11.8076 404.981 11.29C404.2 10.7725 402.989 10.5137 401.348 10.5137Z" fill="#E1F0F9"/>
+            <path d="M436.051 29H423.922V7.58398H436.051V10.543H427.438V16.3584H435.509V19.3027H427.438V26.0264H436.051V29Z" fill="#E1F0F9"/>
+            <path d="M463.009 29H450.88V7.58398H463.009V10.543H454.396V16.3584H462.467V19.3027H454.396V26.0264H463.009V29Z" fill="#E1F0F9"/>
+            <path d="M477.838 29V7.58398H481.354V26.0117H490.45V29H477.838Z" fill="#E1F0F9"/>
+            <path d="M507.421 17.3545L512.504 7.58398H516.298L509.179 20.6797V29H505.678V20.8115L498.544 7.58398H502.367L507.421 17.3545Z" fill="#E1F0F9"/>
+            <path d="M518.461 27.1836C518.461 26.3828 518.666 25.8213 519.076 25.499C519.496 25.167 520.004 25.001 520.599 25.001C521.195 25.001 521.703 25.167 522.123 25.499C522.552 25.8213 522.767 26.3828 522.767 27.1836C522.767 27.9648 522.552 28.5312 522.123 28.8828C521.703 29.2246 521.195 29.3955 520.599 29.3955C520.004 29.3955 519.496 29.2246 519.076 28.8828C518.666 28.5312 518.461 27.9648 518.461 27.1836Z" fill="#E1F0F9"/>
+        </svg>
+    
+
+            </div>
+          </div>
+          <div class="footer--legal-rows-wrapper--row">
+            &copy; OpenSearch contributors, 2024. OpenSearch is a <a href="/trademark-brand-policy.html">registered trademark</a> of Amazon Web Services.</a> <br /><br /> 
+
+
+© 2005-2021 <a href="https://www.djangoproject.com/foundation/"> Django Software Foundation</a> and individual contributors. Django is a
+<a href="https://www.djangoproject.com/trademarks/">registered trademark</a> of the Django Software Foundation.<br />
+This website was forked from the BSD-licensed <a href="https://github.com/django/djangoproject.com/">djangoproject.com</a> originally designed by <a href="https://www.threespot.com">Threespot</a> <span class="ampersand">&amp;</span> <a  href="https://andrevv.com/">andrevv</a>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <script>
+    function extless(input) {
+        return input.replace(/(.*)\.[^.]+$/, '$1');
+    }
+    var require = {
+        shim: {
+            'jquery': []
+        },
+        paths: {
+            "jquery": extless("/assets/js/lib/jquery-3.6/jquery-3.6.0.min.js"),
+            "clipboard": extless("/assets/js/lib/clipboard/dist/clipboard.min.js"),
+            "mod/floating-warning": extless("/assets/js/mod/floating-warning.js"),
+            "mod/list-collapsing": extless("/assets/js/mod/list-collapsing.js"),
+            "mod/tag-picker" : extless("/assets/js/mod/tag-picker.js"),
+            "mod/version-switcher": extless("/assets/js/mod/version-switcher.js"),
+            "mod/search-key": extless("/assets/js/mod/search-key.js"),
+            "mod/console-tabs": extless("/assets/js/mod/console-tabs.js"),
+            "mod/locale-date": extless("/assets/js/mod/locale-date.js"),
+        }
+    };
+    </script>
+    <script data-main="/assets/js/main.js" src="/assets/js/lib/require.js"></script>
+    <script src="/assets/js/search.js"></script>
+    
+
+  </body>
+</html>
